@@ -1,11 +1,11 @@
 <script>
-    export let player = {
+    let {player = {
         id: 0,
         name: '',
         age: 0,
         number: 0,
         position: '',
-    }
+    } } = $props()
 </script>
 
 
