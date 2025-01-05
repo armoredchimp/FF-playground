@@ -1,6 +1,6 @@
 <script>
   import axios from "axios";
-	import { onMount } from "svelte";
+	
 
     let { player = {
       id: 0,
@@ -15,7 +15,6 @@
     let playerStats = $state(null)
 
     async function playerStatsCall(id){
-
       const options = {
         method: 'GET',
         url: 'https://api-football-v1.p.rapidapi.com/v3/players',
@@ -31,16 +30,24 @@
 
       try {
       const response = await axios.request(options);
-      if (response.data.response?.[0]) {
-        playerStats = response.data.response[0].statistics[0];
-        $inspect(playerStats)
+      console.log(response.data.response)
+      if (response.data.response?.[0]?.statistics) {
+        // Find the primary competition stats (usually index 1)
+        const primaryStats = response.data.response[0].statistics.find(
+          (stat) => stat.games.appearences !== null
+        );
+        
+        if (primaryStats) {
+          playerStats = primaryStats;
+         
+        }
       }
     } catch (error) {
       console.error(error);
     }
-    }
+  }
 
-    onMount(() => {
+    $effect(() => {
       if (player.id) {
         playerStatsCall(player.id)
       }
@@ -48,27 +55,31 @@
   </script>
   
   <div class="player-card">
-    {#if player.photo}
-      <img src={player.photo} alt={player.name} class="player-photo" />
-    {/if}
-    {#if playerStats?.team?.logo}
-      <img src={playerStats.team.logo} alt={playerStats.team.name} class="team-logo" />
-    {/if}
-    <div class="info">
-      <h3>{player.name || `${player.firstname} ${player.lastname}`}</h3>
-      <p>Age: {player.age} • {player.nationality}</p>
+  {#if player.photo}
+    <img src={player.photo} alt={player.name} class="player-photo" />
+  {/if}
+  {#if playerStats?.team?.logo}
+    <img src={playerStats.team.logo} alt={playerStats.team.name} class="team-logo" />
+  {/if}
   
-      <p class="team">{playerStats?.team?.name || 'N/A'}</p>
-  
-      <div class="stats-section">
-        <p>Position: {playerStats?.games?.position || 'N/A'}</p>
-        <p>Appearances: {playerStats?.games?.appearences ?? 'N/A'}</p>
-        <p>Goals: {playerStats?.goals?.total ?? 'N/A'}</p>
-        <p>Assists: {playerStats?.goals?.assists ?? 'N/A'}</p>
-        <p>Rating: {playerStats?.games?.rating ?? 'N/A'}</p>
-      </div>
+  <div class="info">
+    <h3>{player.name || `${player.firstname} ${player.lastname}`}</h3>
+    <p>Age: {player.age} • {player.nationality}</p>
+    
+    <p class="team">{playerStats?.team?.name || 'N/A'}</p>
+    
+    <div class="stats-section">
+      <p>Position: {playerStats?.games?.position || 'N/A'}</p>
+      <p>Appearances: {playerStats?.games?.appearences ?? 'N/A'}</p>
+      <p>Minutes: {playerStats?.games?.minutes ?? 'N/A'}</p>
+      <p>Goals: {playerStats?.goals?.total ?? 'N/A'}</p>
+      <p>Assists: {playerStats?.goals?.assists ?? 'N/A'}</p>
+      <p>Rating: {Number(playerStats?.games?.rating).toFixed(1) ?? 'N/A'}</p>
+      <p>Yellow Cards: {playerStats?.cards?.yellow ?? 'N/A'}</p>
+      <p>Red Cards: {playerStats?.cards?.red ?? 'N/A'}</p>
     </div>
   </div>
+</div>
   
   <style>
     .player-card {
