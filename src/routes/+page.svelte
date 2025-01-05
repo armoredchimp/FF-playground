@@ -34,8 +34,11 @@ async function test(){
 </script>
 
 
-<input bind:value={teamNumber}>
-<button onclick={test}>Click</button>
+<div class="container">
+    <input bind:value={teamNumber}>
+    <button class="button" onclick={test}>Click</button>
+    <h4 class="page-link"><a href='/draft'>Draft Page</a></h4>
+</div>
 {#if teamInfo}
     <h1>{teamInfo.name}</h1>
     <img src={teamInfo.logo} alt="Team Logo" width="100">
@@ -78,11 +81,19 @@ async function test(){
 
 <style>
 .container {
-max-width: 800px;
-margin: 0 auto;
-padding: 1rem;
+    display: flex;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 1rem;
 }
 
+.button {
+    margin-left: 1rem;
+}
+
+.page-link {
+    margin-left: 4rem;
+}
 .team-info {
 display: flex;
 align-items: center;
