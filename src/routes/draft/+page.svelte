@@ -14,7 +14,7 @@ async function getPlayers(){
         url: 'https://api-football-v1.p.rapidapi.com/v3/players',
         params: {
             league: '39',
-            season: '2024',
+            season: '2023',
             page
         },
         headers: {
@@ -44,7 +44,7 @@ async function getPlayers(){
 
 </script>
 
-<h1>TEST2</h1>
+<h4 class="page-link"><a href='/'>Home</a></h4>
 <button onclick={getPlayers} disabled={loading}>Get Players</button>
 
 {#if playersPool && playersPool.length > 0}
@@ -59,6 +59,5 @@ async function getPlayers(){
             
 
     </div>  
-    <h4>TEST</h4>
     <button onclick={getPlayers} disabled={loading}>{loading ? 'Loading...' : 'Load More'}</button>
 {/if}
