@@ -1,6 +1,5 @@
 <script>
   import axios from "axios";
-	
 
     let { player = {
       id: 0,
@@ -13,6 +12,71 @@
     }} = $props();
 
     let playerStats = $state(null)
+    let hasAppearances = $state(false)
+    let transferValue = $state(0)
+
+    export function calculateTransferValue(player, statistics) {
+        // Base value in millions
+        let baseValue = 1.0;
+        
+        const stats = statistics;
+        if (!stats) return baseValue;
+    
+        // Age factor (peak value around 26-27)
+        const ageFactor = Math.max(0.7, 1 - (Math.abs(player.age - 26) * 0.05));
+    
+        // Game time value
+        const appearanceValue = (stats.games?.appearences || 0) * 0.1;
+        const minutesValue = (stats.games?.minutes || 0) * 0.0001;
+    
+        // Offensive contributions
+        const goalsValue = (stats.goals?.total || 0) * 0.5;
+        const assistsValue = (stats.goals?.assists || 0) * 0.3;
+        const shotAccuracy = (stats.shots?.on || 0) / (stats.shots?.total || 1) * 0.5;
+        
+        // Passing & Creation
+        const passValue = (stats.passes?.total || 0) * 0.001;
+        const keyPassValue = (stats.passes?.key || 0) * 0.1;
+        
+        // Defensive contributions
+        const tackleValue = (stats.tackles?.total || 0) * 0.05;
+        const interceptValue = (stats.tackles?.interceptions || 0) * 0.05;
+        const blockValue = (stats.tackles?.blocks || 0) * 0.05;
+        
+        // Goalkeeper specific (heavily weighted)
+        const savesValue = (stats.goals?.saves || 0) * 0.2;
+        const cleanSheetBonus = (stats.goals?.conceded === 0 ? 2.0 : 0);
+        
+        // Duel success
+        const duelValue = stats.duels?.total ? 
+        ((stats.duels.won || 0) / stats.duels.total) * 0.5 : 0;
+        
+        // Discipline penalty
+        const disciplineValue = ((stats.cards?.yellow || 0) * -0.1) + 
+        ((stats.cards?.red || 0) * -0.5);
+    
+        // Sum all contributions
+        const totalValue = (baseValue + 
+        appearanceValue + 
+        minutesValue + 
+        goalsValue + 
+        assistsValue + 
+        shotAccuracy + 
+        passValue + 
+        keyPassValue + 
+        tackleValue + 
+        interceptValue + 
+        blockValue + 
+        savesValue + 
+        cleanSheetBonus + 
+        duelValue + 
+        disciplineValue) * ageFactor;
+    
+        // Return with minimum value of 0.1M
+        return Math.max(totalValue, 0.1);
+  }
+
+
 
     async function playerStatsCall(id){
       const options = {
@@ -39,7 +103,8 @@
         
         if (primaryStats) {
           playerStats = primaryStats;
-         
+          hasAppearances = true;
+          transferValue = calculateTransferValue(player, primaryStats)
         }
       }
     } catch (error) {
@@ -53,34 +118,38 @@
       }
     })
   </script>
+
+
   
+{#if hasAppearances}
   <div class="player-card">
-  {#if player.photo}
-    <img src={player.photo} alt={player.name} class="player-photo" />
-  {/if}
-  {#if playerStats?.team?.logo}
-    <img src={playerStats.team.logo} alt={playerStats.team.name} class="team-logo" />
-  {/if}
-  
-  <div class="info">
-    <h3>{player.name || `${player.firstname} ${player.lastname}`}</h3>
-    <p>Age: {player.age} • {player.nationality}</p>
+    {#if player.photo}
+      <img src={player.photo} alt={player.name} class="player-photo" />
+    {/if}
+    {#if playerStats?.team?.logo}
+      <img src={playerStats.team.logo} alt={playerStats.team.name} class="team-logo" />
+    {/if}
     
-    <p class="team">{playerStats?.team?.name || 'N/A'}</p>
-    
-    <div class="stats-section">
-      <p>Position: {playerStats?.games?.position || 'N/A'}</p>
-      <p>Appearances: {playerStats?.games?.appearences ?? 'N/A'}</p>
-      <p>Minutes: {playerStats?.games?.minutes ?? 'N/A'}</p>
-      <p>Goals: {playerStats?.goals?.total ?? 'N/A'}</p>
-      <p>Assists: {playerStats?.goals?.assists ?? 'N/A'}</p>
-      <p>Rating: {Number(playerStats?.games?.rating).toFixed(1) ?? 'N/A'}</p>
-      <p>Yellow Cards: {playerStats?.cards?.yellow ?? 'N/A'}</p>
-      <p>Red Cards: {playerStats?.cards?.red ?? 'N/A'}</p>
+    <div class="info">
+      <h3>{player.name || `${player.firstname} ${player.lastname}`}</h3>
+      <p>Age: {player.age} • {player.nationality}</p>
+      
+      <p class="team">{playerStats?.team?.name || 'N/A'}</p>
+      
+      <div class="stats-section">
+        <p>Position: {playerStats?.games?.position || 'N/A'}</p>
+        <p>Appearances: {playerStats?.games?.appearences ?? 'N/A'}</p>
+        <p>Minutes: {playerStats?.games?.minutes ?? 'N/A'}</p>
+        <p>Goals: {playerStats?.goals?.total ?? 'N/A'}</p>
+        <p>Assists: {playerStats?.goals?.assists ?? 'N/A'}</p>
+        <p>Rating: {Number(playerStats?.games?.rating).toFixed(1) ?? 'N/A'}</p>
+        <p>Yellow Cards: {playerStats?.cards?.yellow ?? 'N/A'}</p>
+        <p>Red Cards: {playerStats?.cards?.red ?? 'N/A'}</p>
+        <p class="transfer-value">Estimated Value: £{transferValue.toFixed(2)}M</p>
+      </div>
     </div>
   </div>
-</div>
-  
+{/if} 
   <style>
     .player-card {
       border: 1px solid #ddd;
@@ -112,4 +181,10 @@
       margin: 0.5rem 0 0;
       color: #666;
     }
+
+    .transfer-value {
+      font-weight: bold;
+      color: #2d3748;
+      margin-top: 1rem;
+  }
   </style>
