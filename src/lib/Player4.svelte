@@ -67,7 +67,7 @@
             </div>
         {/if}
     </div>
-</div>
+</button>
 
 <style>
     .player-card {
