@@ -24,8 +24,8 @@
     type="button"
     class="player-card" 
     class:expanded={isExpanded}
-    on:click={toggleExpand}
-    on:keydown={e => e.key === 'Enter' && toggleExpand()}
+    onclick={toggleExpand}
+    onkeydown={e => e.key === 'Enter' && toggleExpand()}
     aria-expanded={isExpanded}
     aria-label={`Player card for ${player.name || `${player.firstname} ${player.lastname}`}`}
 >
