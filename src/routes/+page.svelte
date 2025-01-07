@@ -38,6 +38,7 @@ async function test(){
     <input bind:value={teamNumber}>
     <button class="button" onclick={test}>Click</button>
     <h4 class="page-link"><a href='/draft'>Draft Page</a></h4>
+    <h4 class="page-link"><a href='/draft2'>Draft Page 2</a></h4>
 </div>
 {#if teamInfo}
     <h1>{teamInfo.name}</h1>
