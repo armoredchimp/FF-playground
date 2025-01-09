@@ -2,17 +2,35 @@
     import axios from "axios";
     import Player4 from "$lib/Player4.svelte";
     import Team from "$lib/Team.svelte";
+    import { teams } from "$lib/teams.svelte";
+    import { firstParts, secondParts } from "$lib/clubNameData.svelte"
+   
 
     let processedPlayers = $state([]); 
     let loading = $state(false);
     let progress = $state({ current: 0, total: 0 });
     let complete = $state(false)
+    let gate1 = $state(false)
+    const fP = firstParts;
+    const sP = secondParts
+
+    function generateClubName() {
+        const firstPart = fP[Math.floor(Math.random() * fP.length)];
+        const secondPart = sP[Math.floor(Math.random() * sP.length)];
+        return `${firstPart} ${secondPart}`;
+    }    
 
     function createTeams(){
-        for(let i = 0; i <= 11; i++){
-            
+        for(let i = 1; i <= 12; i++){
+            teams[`team${i}`].name = generateClubName();
+            console.log(teams[`team${i}`].name);
         }
+        console.log(teams)
+        gate1 = true
     }
+        
+
+
 
 
     function calculateTransferValue(player, statistics) {
@@ -238,8 +256,25 @@
         </div>
         {#if complete}
         <div>
-            <button onclick={createTeams}>Create Teams and Start Draft</button>
+            {#if !gate1}
+            <button 
+                onclick={createTeams} 
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-6"
+            >
+                Create Teams and Start Draft
+            </button>
+            {/if}
+
+            {#if gate1}
+                <div class="teams-grid">
+                    {#each Object.entries(teams) as [key, team]}
+                        <Team team={team} />
+                    {/each}
+                </div>
+            {/if}
         </div>
+        
+     
         {/if}
     </div>
 {/if}
@@ -254,4 +289,10 @@
         max-width: 800px;
         margin-left: 5rem;
     }
+    .teams-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 1rem;
+                padding: 1rem;
+            }
 </style>
