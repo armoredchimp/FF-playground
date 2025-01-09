@@ -3,7 +3,7 @@
     import Player4 from "$lib/Player4.svelte";
     import Team from "$lib/Team.svelte";
     import { teams } from "$lib/teams.svelte";
-    import { firstParts, secondParts } from "$lib/clubNameData.svelte"
+    import { firstParts, secondParts, commonNames } from "$lib/clubNameData.svelte"
    
 
     let processedPlayers = $state([]); 
@@ -14,13 +14,55 @@
     const fP = firstParts;
     const sP = secondParts
 
+    // Track how many times each first name is used
+    const firstNameCounts = {};
+
+    // Track which second names (except common ones) have been used
+    const usedSecondNames = new Set();
+
+
     function generateClubName() {
-        const firstPart = fP[Math.floor(Math.random() * fP.length)];
-        const secondPart = sP[Math.floor(Math.random() * sP.length)];
-        return `${firstPart} ${secondPart}`;
-    }    
+        // Get available first names (used less than twice)
+        const availableFirsts = firstParts.filter(name => 
+            !firstNameCounts[name] || firstNameCounts[name] < 2
+        );
+        
+        // Pick random first name
+        const firstName = availableFirsts[Math.floor(Math.random() * availableFirsts.length)];
+        firstNameCounts[firstName] = (firstNameCounts[firstName] || 0) + 1;
+
+        // 80% chance to add second name
+        if (Math.random() < 0.8) {
+            // Split into common and non-common names
+            const unusedNonCommon = secondParts.filter(name => 
+                !commonNames.includes(name) && !usedSecondNames.has(name)
+            );
+            
+            // Combine available names with extra weight for common names
+            const selectionPool = [...unusedNonCommon, ...commonNames, ...commonNames];
+            
+            // If we have any names available
+            if (selectionPool.length > 0) {
+                // Pick random second name
+                const secondName = selectionPool[Math.floor(Math.random() * selectionPool.length)];
+                
+                // If it's not a common name, mark it as used
+                if (!commonNames.includes(secondName)) {
+                    usedSecondNames.add(secondName);
+                }
+                
+                return `${firstName} ${secondName}`;
+            }
+        }
+        
+        return firstName;
+}
 
     function createTeams(){
+        // Reset the tracking sets
+        Object.keys(firstNameCounts).forEach(key => delete firstNameCounts[key]);
+        usedSecondNames.clear();
+        
         for(let i = 1; i <= 12; i++){
             teams[`team${i}`].name = generateClubName();
             console.log(teams[`team${i}`].name);
@@ -28,10 +70,6 @@
         console.log(teams)
         gate1 = true
     }
-        
-
-
-
 
     function calculateTransferValue(player, statistics) {
         let baseValue = 2.0;

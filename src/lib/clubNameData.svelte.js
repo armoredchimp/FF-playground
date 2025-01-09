@@ -71,20 +71,20 @@ export let firstParts = $state([
     "Littleborough",
     "Cremington",
     "Blocksworth",
-    "Bullsbury"
+    "Bullsbury",
+    "Wickleton"
 ]);
 
+export let commonNames = ["United", "United F.C.", "Town", "City"];
+
 export let secondParts = $state([
-    "United",
-    "United F.C.",
-    "Town",
     "Town F.C.",
-    "City",
     "City F.C.",
     "Athletic",
     "Rovers",
     "Wanderers",
     "Albion",
+    "County",
     "County F.C.",
     "Grove F.C.",
     "Forest",
