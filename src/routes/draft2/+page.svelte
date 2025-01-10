@@ -5,12 +5,25 @@
     import { teams } from "$lib/teams.svelte";
     import { firstParts, secondParts, commonNames } from "$lib/clubNameData.svelte"
    
+    let playerTeam = $state({
+        name: '',
+        draftOrder: 0,
+        attackers: [],
+        midfielders: [],
+        defenders: [],
+        keepers: [],
+        playerCount: 0
+    })
+
 
     let processedPlayers = $state([]); 
     let loading = $state(false);
     let progress = $state({ current: 0, total: 0 });
     let complete = $state(false)
     let gate1 = $state(false)
+
+    let numberPool = Array.from({length:14}, (_,i) => i+1);
+
     const fP = firstParts;
     const sP = secondParts
 
@@ -56,19 +69,41 @@
         }
         
         return firstName;
-}
+    }
+
+    function playerName() {
+        const name = prompt("Please enter a name for your team:")
+        if (name !== null){
+            return name
+        }
+        return ''
+    }
+
+    function assignDraftOrder(){
+        if (numberPool.length === 0){
+            return null
+        }
+        
+        const randomIndex = Math.floor(Math.random() * numberPool.length)
+        return numberPool.splice(randomIndex, 1)[0]
+    }
+
 
     function createTeams(){
         // Reset the tracking sets
         Object.keys(firstNameCounts).forEach(key => delete firstNameCounts[key]);
         usedSecondNames.clear();
         
-        for(let i = 1; i <= 12; i++){
+        for(let i = 1; i <= 13; i++){
             teams[`team${i}`].name = generateClubName();
+            teams[`team${i}`].draftOrder = assignDraftOrder();
             console.log(teams[`team${i}`].name);
         }
+        playerTeam.draftOrder = assignDraftOrder();
         console.log(teams)
+        console.log(playerTeam.draftOrder)
         gate1 = true
+        playerTeam.name = playerName()
     }
 
     function calculateTransferValue(player, statistics) {
@@ -305,7 +340,8 @@
 
             {#if gate1}
                 <div class="teams-grid">
-                    {#each Object.entries(teams) as [key, team]}
+                    {#each Object.entries(teams)
+                        .sort(([,a],[,b])=> a.draftOrder - b.draftOrder) as [key, team]}
                         <Team team={team} />
                     {/each}
                 </div>

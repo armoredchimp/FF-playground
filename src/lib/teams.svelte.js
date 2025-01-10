@@ -106,5 +106,14 @@ export let teams = $state({
         defenders: [],
         keepers: [],
         playerCount: 0
+    },
+    team13: {
+        name: '',
+        draftOrder: 0,
+        attackers: [],
+        midfielders: [],
+        defenders: [],
+        keepers: [],
+        playerCount: 0
     }
  });
