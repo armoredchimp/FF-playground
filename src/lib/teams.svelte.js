@@ -6,16 +6,18 @@ export let teams = $state({
         midfielders: [],
         defenders: [],
         keepers: [],
-        playerCount: 0
+        playerCount: 0,
+        traits: []
     },
     team2: {
         name: '',
         draftOrder: 0,
         attackers: [],
-        midfielders: [], 
+        midfielders: [],
         defenders: [],
         keepers: [],
-        playerCount: 0
+        playerCount: 0,
+        traits: []
     },
     team3: {
         name: '',
@@ -24,7 +26,8 @@ export let teams = $state({
         midfielders: [],
         defenders: [],
         keepers: [],
-        playerCount: 0
+        playerCount: 0,
+        traits: []
     },
     team4: {
         name: '',
@@ -33,7 +36,8 @@ export let teams = $state({
         midfielders: [],
         defenders: [],
         keepers: [],
-        playerCount: 0
+        playerCount: 0,
+        traits: []
     },
     team5: {
         name: '',
@@ -42,7 +46,8 @@ export let teams = $state({
         midfielders: [],
         defenders: [],
         keepers: [],
-        playerCount: 0
+        playerCount: 0,
+        traits: []
     },
     team6: {
         name: '',
@@ -51,7 +56,8 @@ export let teams = $state({
         midfielders: [],
         defenders: [],
         keepers: [],
-        playerCount: 0
+        playerCount: 0,
+        traits: []
     },
     team7: {
         name: '',
@@ -60,7 +66,8 @@ export let teams = $state({
         midfielders: [],
         defenders: [],
         keepers: [],
-        playerCount: 0
+        playerCount: 0,
+        traits: []
     },
     team8: {
         name: '',
@@ -69,7 +76,8 @@ export let teams = $state({
         midfielders: [],
         defenders: [],
         keepers: [],
-        playerCount: 0
+        playerCount: 0,
+        traits: []
     },
     team9: {
         name: '',
@@ -78,7 +86,8 @@ export let teams = $state({
         midfielders: [],
         defenders: [],
         keepers: [],
-        playerCount: 0
+        playerCount: 0,
+        traits: []
     },
     team10: {
         name: '',
@@ -87,7 +96,8 @@ export let teams = $state({
         midfielders: [],
         defenders: [],
         keepers: [],
-        playerCount: 0
+        playerCount: 0,
+        traits: []
     },
     team11: {
         name: '',
@@ -96,7 +106,8 @@ export let teams = $state({
         midfielders: [],
         defenders: [],
         keepers: [],
-        playerCount: 0
+        playerCount: 0,
+        traits: []
     },
     team12: {
         name: '',
@@ -105,7 +116,8 @@ export let teams = $state({
         midfielders: [],
         defenders: [],
         keepers: [],
-        playerCount: 0
+        playerCount: 0,
+        traits: []
     },
     team13: {
         name: '',
@@ -114,6 +126,7 @@ export let teams = $state({
         midfielders: [],
         defenders: [],
         keepers: [],
-        playerCount: 0
+        playerCount: 0,
+        traits: []
     }
- });
+});

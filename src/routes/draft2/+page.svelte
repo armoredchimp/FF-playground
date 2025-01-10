@@ -24,15 +24,61 @@
 
     let numberPool = Array.from({length:14}, (_,i) => i+1);
 
-    const fP = firstParts;
-    const sP = secondParts
-
     // Track how many times each first name is used
     const firstNameCounts = {};
 
     // Track which second names (except common ones) have been used
     const usedSecondNames = new Set();
 
+    function generateClubTraits() {
+        // Define possible traits
+        const possibleTraits = [
+            'Favors Defense',
+            'Strong Passing',
+            'High Pressure',
+            'Counter Attack',
+            'Possession Based',
+            'Wing Play',
+            'Direct Football',
+            'Youth Focus',
+            'Aggressive Tackling',
+            'Short Passing'
+        ];
+
+        // For each team in teams object
+        for (let i = 1; i <= 13; i++) {
+            // Randomly decide how many traits (0-2)
+            const numTraits = Math.floor(Math.random() * 3); // 0, 1, or 2
+            
+            // Create a copy of possible traits to draw from
+            const availableTraits = [...possibleTraits];
+            const selectedTraits = [];
+
+            // Select random traits
+            for (let j = 0; j < numTraits; j++) {
+                const randomIndex = Math.floor(Math.random() * availableTraits.length);
+                selectedTraits.push(availableTraits[randomIndex]);
+                // Remove selected trait to avoid duplicates within same team
+                availableTraits.splice(randomIndex, 1);
+            }
+
+            // Assign traits to team
+            teams[`team${i}`].traits = selectedTraits;
+        }
+
+        // Also assign traits to player's team
+        const playerNumTraits = Math.floor(Math.random() * 3);
+        const playerAvailableTraits = [...possibleTraits];
+        const playerSelectedTraits = [];
+
+        for (let i = 0; i < playerNumTraits; i++) {
+            const randomIndex = Math.floor(Math.random() * playerAvailableTraits.length);
+            playerSelectedTraits.push(playerAvailableTraits[randomIndex]);
+            playerAvailableTraits.splice(randomIndex, 1);
+        }
+
+        playerTeam.traits = playerSelectedTraits;
+}
 
     function generateClubName() {
         // Get available first names (used less than twice)
@@ -100,6 +146,7 @@
             console.log(teams[`team${i}`].name);
         }
         playerTeam.draftOrder = assignDraftOrder();
+        generateClubTraits();
         console.log(teams)
         console.log(playerTeam.draftOrder)
         gate1 = true
