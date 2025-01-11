@@ -18,10 +18,16 @@
     function toggleExpand() {
         isExpanded = !isExpanded;
     }
+
+    function handleDraftClick(e) {
+        e.stopPropagation();
+        // Draft logic will go here
+    }
 </script>
 
-<button 
-    type="button"
+<div 
+    role="button"
+    tabindex="0"
     class="player-card" 
     class:expanded={isExpanded}
     onclick={toggleExpand}
@@ -51,23 +57,32 @@
                         <img src={player.photo} alt={player.name} class="player-photo" />
                     {/if}
                 </div>
-                <div class="expanded-stats">
-                    <p>Nationality: {player.nationality}</p>
-                    <p>Appearances: {playerStats?.games?.appearences ?? 'N/A'}</p>
-                    <p>Minutes Played: {playerStats?.games?.minutes ?? 'N/A'}</p>
-                    <p>Goals: {playerStats?.goals?.total ?? 'N/A'}</p>
-                    <p>Assists: {playerStats?.goals?.assists ?? 'N/A'}</p>
-                    <p>Yellow Cards: {playerStats?.cards?.yellow ?? 'N/A'}</p>
-                    <p>Red Cards: {playerStats?.cards?.red ?? 'N/A'}</p>
-                    <p>Tackles: {playerStats?.tackles?.total ?? 'N/A'}</p>
-                    <p>Interceptions: {playerStats?.tackles?.interceptions ?? 'N/A'}</p>
-                    <p>Key Passes: {playerStats?.passes?.key ?? 'N/A'}</p>
-                    <p>Pass Accuracy: {playerStats?.passes?.accuracy ? `${playerStats.passes.accuracy}%` : 'N/A'}</p>
+                <div class="expanded-info">
+                    <div class="expanded-stats">
+                        <p>Nationality: {player.nationality}</p>
+                        <p>Appearances: {playerStats?.games?.appearences ?? 'N/A'}</p>
+                        <p>Minutes Played: {playerStats?.games?.minutes ?? 'N/A'}</p>
+                        <p>Goals: {playerStats?.goals?.total ?? 'N/A'}</p>
+                        <p>Assists: {playerStats?.goals?.assists ?? 'N/A'}</p>
+                        <p>Yellow Cards: {playerStats?.cards?.yellow ?? 'N/A'}</p>
+                        <p>Red Cards: {playerStats?.cards?.red ?? 'N/A'}</p>
+                        <p>Tackles: {playerStats?.tackles?.total ?? 'N/A'}</p>
+                        <p>Interceptions: {playerStats?.tackles?.interceptions ?? 'N/A'}</p>
+                        <p>Key Passes: {playerStats?.passes?.key ?? 'N/A'}</p>
+                        <p>Pass Accuracy: {playerStats?.passes?.accuracy ? `${playerStats.passes.accuracy}%` : 'N/A'}</p>
+                    </div>
+                    <button 
+                        class="draft-button"
+                        onclick={handleDraftClick}
+                        aria-label={`Draft ${player.name || `${player.firstname} ${player.lastname}`}`}
+                    >
+                        Draft Player
+                    </button>
                 </div>
             </div>
         {/if}
     </div>
-</button>
+</div>
 
 <style>
     .player-card {
@@ -80,10 +95,6 @@
         margin-bottom: 0.5rem;
         cursor: pointer;
         transition: all 0.2s ease;
-        /* Reset button styles */
-        appearance: none;
-        -webkit-appearance: none;
-        font: inherit;
     }
 
     .player-card:hover {
@@ -154,15 +165,39 @@
         object-fit: cover;
     }
 
+    .expanded-info {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
     .expanded-stats {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
         gap: 0.5rem;
-        flex-grow: 1;
     }
 
     .expanded-stats p {
         margin: 0;
         color: #4a5568;
+    }
+
+    .draft-button {
+        align-self: flex-end;
+        padding: 0.5rem 1rem;
+        background-color: #64748b;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .draft-button:hover {
+        background-color: #475569;
+        transform: translateY(-1px);
     }
 </style>

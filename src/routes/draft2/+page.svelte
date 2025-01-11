@@ -2,11 +2,11 @@
     import axios from "axios";
     import Player4 from "$lib/Player4.svelte";
     import Team from "$lib/Team.svelte";
+    import PlayerTeam from "$lib/PlayerTeam.svelte";
     import { teams } from "$lib/teams.svelte";
     import { calculateTransferValue, generateClubTraits } from "$lib/utils.svelte"
     import { firstParts, secondParts, commonNames } from "$lib/clubNameData.svelte"
    
-
     let playerTeam = $state({
         name: '',
         draftOrder: 0,
@@ -16,7 +16,6 @@
         keepers: [],
         playerCount: 0
     })
-
 
     let processedPlayers = $state([]); 
     let loading = $state(false);
@@ -31,7 +30,6 @@
 
     // Track which second names (except common ones) have been used
     const usedSecondNames = new Set();
-
 
     function generateClubName() {
         // Get available first names (used less than twice)
@@ -86,7 +84,6 @@
         const randomIndex = Math.floor(Math.random() * numberPool.length)
         return numberPool.splice(randomIndex, 1)[0]
     }
-
 
     function createTeams(){
         // Reset the tracking sets
@@ -182,15 +179,14 @@
 <button 
     onclick={fetchAndProcessPlayers} 
     disabled={loading}
+    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-6"
 >
     {loading ? `Processing players... (${progress.current}/${progress.total})` : 'Get Premier League Players'}
 </button>
 
-
-
 {#if processedPlayers.length > 0}
-    <div class="main-container">
-        <div class="players-container">
+    <div class="page-container">
+        <div class="players-section">
             <h3>Premier League Players by Transfer Value ({processedPlayers.length})</h3>
             {#each processedPlayers as {player, statistics, transferValue}}
                 <Player4 
@@ -200,46 +196,93 @@
                 />
             {/each}
         </div>
-        {#if complete}
-        <div>
-            {#if !gate1}
-            <button 
-                onclick={createTeams} 
-                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-6"
-            >
-                Create Teams and Start Draft
-            </button>
-            {/if}
 
-            {#if gate1}
-                <div class="teams-grid">
-                    {#each Object.entries(teams)
-                        .sort(([,a],[,b])=> a.draftOrder - b.draftOrder) as [key, team]}
-                        <Team team={team} />
-                    {/each}
-                </div>
-            {/if}
-        </div>
-        
-     
+        {#if complete}
+            <div class="draft-section">
+                {#if !gate1}
+                    <div class="create-teams-btn">
+                        <button 
+                            onclick={createTeams} 
+                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-6"
+                        >
+                            Create Teams and Start Draft
+                        </button>
+                    </div>
+                {/if}
+
+                {#if gate1}
+                    <div class="player-team-section">
+                        <PlayerTeam team={playerTeam} />
+                    </div>
+                    <div class="ai-teams-section">
+                        <div class="teams-grid">
+                            {#each Object.entries(teams)
+                                .sort(([,a],[,b])=> a.draftOrder - b.draftOrder) as [key, team]}
+                                <Team team={team} />
+                            {/each}
+                        </div>
+                    </div>
+                {/if}
+            </div>
         {/if}
     </div>
 {/if}
 
 <style>
-    .main-container {
+    .page-container {
         display: flex;
-        justify-content: space-around;
-    }
-    .players-container {
+        width: 100%;
+        max-width: 2000px;
+        margin: 0 auto;
+        gap: 2rem;
         padding: 1rem;
-        max-width: 800px;
-        margin-left: 5rem;
+        height: calc(100vh - 120px);
     }
+
+    .players-section {
+        width: 40%;
+        padding: 1rem;
+        overflow-y: auto;
+        border-right: 1px solid #e5e7eb;
+    }
+
+    .draft-section {
+        display: flex;
+        width: 60%;
+    }
+
+    .player-team-section {
+        width: 42%;  /* 25% of total width (42% of 60%) */
+        padding: 1rem;
+        display: flex;
+        justify-content: center;
+        border-right: 1px solid #e5e7eb;
+    }
+
+    .ai-teams-section {
+        width: 58%;  /* 35% of total width (58% of 60%) */
+        padding: 1rem;
+        overflow-y: auto;
+    }
+
     .teams-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-                gap: 1rem;
-                padding: 1rem;
-            }
+        display: grid;
+        grid-template-columns: repeat(auto-fill, 300px);
+        gap: 1.5rem;
+        justify-content: center;
+    }
+
+    .create-teams-btn {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 1rem;
+    }
+
+    h3 {
+        margin-bottom: 1rem;
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
 </style>
