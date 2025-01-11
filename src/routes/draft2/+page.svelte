@@ -20,43 +20,68 @@
     let processedPlayers = $state([]); 
     let loading = $state(false);
     let progress = $state({ current: 0, total: 0 });
-    let complete = $state(false)
-    let gate1 = $state(false)
+    let complete = $state(false);
+    let gate1 = $state(false);
+    let draftOrder = $state([]);
 
     let numberPool = Array.from({length:14}, (_,i) => i+1);
-
-    // Track how many times each first name is used
+    
     const firstNameCounts = {};
-
-    // Track which second names (except common ones) have been used
     const usedSecondNames = new Set();
 
+    function organizeDraftOrder() {
+        // Get all teams including player team
+        const allTeams = [
+            { id: 'player', ...playerTeam },
+            ...Object.entries(teams).map(([key, team]) => ({ id: key, ...team }))
+        ];
+
+        // Sort by draft order
+        allTeams.sort((a, b) => a.draftOrder - b.draftOrder);
+
+        // Create snake draft order for 15 rounds (typical squad size)
+        const fullDraftOrder = [];
+        for (let round = 0; round < 15; round++) {
+            if (round % 2 === 0) {
+                // Forward order
+                fullDraftOrder.push(...allTeams.map(team => ({
+                    ...team,
+                    round: round + 1,
+                    pick: round % 2 === 0 ? allTeams.indexOf(team) + 1 : allTeams.length - allTeams.indexOf(team)
+                })));
+            } else {
+                // Reverse order
+                fullDraftOrder.push(...[...allTeams].reverse().map(team => ({
+                    ...team,
+                    round: round + 1,
+                    pick: round % 2 === 0 ? allTeams.indexOf(team) + 1 : allTeams.length - allTeams.indexOf(team)
+                })));
+            }
+        }
+
+        draftOrder = fullDraftOrder;
+        console.log("Full draft order:", draftOrder);
+        return draftOrder;
+    }
+
     function generateClubName() {
-        // Get available first names (used less than twice)
         const availableFirsts = firstParts.filter(name => 
             !firstNameCounts[name] || firstNameCounts[name] < 2
         );
         
-        // Pick random first name
         const firstName = availableFirsts[Math.floor(Math.random() * availableFirsts.length)];
         firstNameCounts[firstName] = (firstNameCounts[firstName] || 0) + 1;
 
-        // 80% chance to add second name
         if (Math.random() < 0.8) {
-            // Split into common and non-common names
             const unusedNonCommon = secondParts.filter(name => 
                 !commonNames.includes(name) && !usedSecondNames.has(name)
             );
             
-            // Combine available names with extra weight for common names
             const selectionPool = [...unusedNonCommon, ...commonNames, ...commonNames];
             
-            // If we have any names available
             if (selectionPool.length > 0) {
-                // Pick random second name
                 const secondName = selectionPool[Math.floor(Math.random() * selectionPool.length)];
                 
-                // If it's not a common name, mark it as used
                 if (!commonNames.includes(secondName)) {
                     usedSecondNames.add(secondName);
                 }
@@ -86,7 +111,6 @@
     }
 
     function createTeams(){
-        // Reset the tracking sets
         Object.keys(firstNameCounts).forEach(key => delete firstNameCounts[key]);
         usedSecondNames.clear();
         
@@ -97,6 +121,7 @@
         }
         playerTeam.draftOrder = assignDraftOrder();
         generateClubTraits();
+        organizeDraftOrder();
         console.log(teams)
         console.log(playerTeam.draftOrder)
         gate1 = true
@@ -185,6 +210,24 @@
 </button>
 
 {#if processedPlayers.length > 0}
+    {#if gate1}
+        <div class="draft-order-container">
+            <span class="draft-order-trigger">View Draft Order</span>
+            <div class="draft-order-popup">
+                <div class="popup-content">
+                    <h4>Draft Order</h4>
+                    <div class="draft-list">
+                        {#each draftOrder as pick}
+                            <div class="draft-pick">
+                                Round {pick.round}, Pick {pick.pick}: {pick.name}
+                            </div>
+                        {/each}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {/if}
+    
     <div class="page-container">
         <div class="players-section">
             <h3>Premier League Players by Transfer Value ({processedPlayers.length})</h3>
@@ -236,7 +279,63 @@
         margin: 0 auto;
         gap: 2rem;
         padding: 1rem;
-        height: calc(100vh - 120px);
+        height: calc(100vh - 180px); /* Adjusted for draft order text */
+    }
+
+    .draft-order-container {
+        position: relative;
+        width: fit-content;
+        margin: 0 auto 1rem auto;
+    }
+
+    .draft-order-trigger {
+        color: #4a5568;
+        text-decoration: underline;
+        cursor: pointer;
+        font-size: 1.1rem;
+        padding: 0.5rem 1rem;
+    }
+
+    .draft-order-popup {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        z-index: 50;
+        min-width: 400px;
+        max-width: 600px;
+    }
+
+    .draft-order-container:hover .draft-order-popup {
+        display: block;
+    }
+
+    .popup-content {
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+
+    .draft-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .draft-pick {
+        padding: 0.75rem;
+        background: #f8fafc;
+        border-radius: 4px;
+        font-size: 1rem;
+    }
+
+    .draft-pick:nth-child(even) {
+        background: #f1f5f9;
     }
 
     .players-section {
@@ -255,7 +354,9 @@
         width: 42%;  /* 25% of total width (42% of 60%) */
         padding: 1rem;
         display: flex;
-        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
         border-right: 1px solid #e5e7eb;
     }
 
@@ -284,5 +385,13 @@
         margin-bottom: 1rem;
         font-size: 1.2rem;
         font-weight: bold;
+    }
+
+    h4 {
+        margin-bottom: 1rem;
+        font-size: 1.3rem;
+        font-weight: bold;
+        text-align: center;
+        color: #1a202c;
     }
 </style>
