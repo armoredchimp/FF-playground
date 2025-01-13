@@ -22,12 +22,29 @@
     let progress = $state({ current: 0, total: 0 });
     let complete = $state(false);
     let gate1 = $state(false);
-    let draftOrder = $state([]);
+    let draftOrderList = $state([]);
+    let showDraftOrder = $state(false)
+    let popupTimer;
 
     let numberPool = Array.from({length:14}, (_,i) => i+1);
     
     const firstNameCounts = {};
     const usedSecondNames = new Set();
+
+    function showPopup(){
+        clearTimeout(popupTimer);
+        showDraftOrder = true;
+    }
+
+    function hidePopup(){
+        popupTimer = setTimeout(()=>{
+            showDraftOrder = false;
+       }, 500)
+    }
+
+    function keepVisible(){
+        clearTimeout(popupTimer)
+    }
 
     function organizeDraftOrder() {
         // Get all teams including player team
@@ -59,9 +76,9 @@
             }
         }
 
-        draftOrder = fullDraftOrder;
-        console.log("Full draft order:", draftOrder);
-        return draftOrder;
+        draftOrderList = fullDraftOrder;
+        console.log("Full draft order:", draftOrderList);
+        return draftOrderList;
     }
 
     function generateClubName() {
@@ -211,21 +228,30 @@
 
 {#if processedPlayers.length > 0}
     {#if gate1}
-        <div class="draft-order-container">
-            <span class="draft-order-trigger">View Draft Order</span>
-            <div class="draft-order-popup">
-                <div class="popup-content">
-                    <h4>Draft Order</h4>
-                    <div class="draft-list">
-                        {#each draftOrder as pick}
-                            <div class="draft-pick">
-                                Round {pick.round}, Pick {pick.pick}: {pick.name}
-                            </div>
-                        {/each}
+    <div 
+    class="draft-order-container"
+    onmouseenter={showPopup}
+    onmouseleave={hidePopup}
+>
+    <span class="draft-order-trigger">View Draft Order</span>
+    <div 
+        class="draft-order-popup"
+        class:visible={showDraftOrder}
+        onmouseenter={keepVisible}
+        onmouseleave={hidePopup}
+    >
+        <div class="popup-content">
+            <h4>Draft Order</h4>
+            <div class="draft-list">
+                {#each draftOrderList as pick}
+                    <div class="draft-pick">
+                        Round {pick.round}, Pick {pick.pick}: {pick.id === 'player' ? playerTeam.name : pick.name}
                     </div>
-                </div>
+                {/each}
             </div>
         </div>
+    </div>
+</div>
     {/if}
     
     <div class="page-container">
@@ -295,7 +321,7 @@
         font-size: 1.1rem;
         padding: 0.5rem 1rem;
     }
-
+    
     .draft-order-popup {
         display: none;
         position: fixed;
@@ -312,7 +338,7 @@
         max-width: 600px;
     }
 
-    .draft-order-container:hover .draft-order-popup {
+    .draft-order-popup.visible {
         display: block;
     }
 
