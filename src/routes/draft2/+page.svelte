@@ -1,6 +1,7 @@
 <script lang="ts">
     import axios from "axios";
     import Player4 from "$lib/Player4.svelte";
+    import DraftTicker from "$lib/DraftTicker.svelte";
     import Team from "$lib/Team.svelte";
     import PlayerTeam from "$lib/PlayerTeam.svelte";
     import { teams } from "$lib/teams.svelte";
@@ -14,13 +15,24 @@
         midfielders: [],
         defenders: [],
         keepers: [],
-        playerCount: 0
+        playerCount: 0,
+        transferBudget: 350
+    })
+
+    let draft = $state({
+        started: false,
+        currentRound: 1,
+        currentPick: 1,
+        currentTeam: '',
+        nextTeam: ''
+
     })
 
     let processedPlayers = $state([]); 
     let loading = $state(false);
     let progress = $state({ current: 0, total: 0 });
     let complete = $state(false);
+    let gate0 = $state(false);
     let gate1 = $state(false);
     let draftOrderList = $state([]);
     let showDraftOrder = $state(false)
@@ -79,6 +91,21 @@
         draftOrderList = fullDraftOrder;
         console.log("Full draft order:", draftOrderList);
         return draftOrderList;
+    }
+
+
+    function beginDraft(){
+        draft.started = true
+        
+        let currPick = draftOrderList[0];
+        let nextPick = draftOrderList[1]
+
+        draft.currentTeam = currPick.id === 'player' ? playerTeam.name : currPick.name;
+        draft.nextTeam = nextPick.id === 'player' ? playerTeam.name : nextPick.name;
+
+        draft.currentRound = 1;
+        draft.currentPick = 1;
+        
     }
 
     function generateClubName() {
@@ -191,6 +218,7 @@
             processedPlayers = tempContainer.sort((a, b) => b.transferValue - a.transferValue);
             console.log(`Successfully processed ${processedPlayers.length} Premier League players`);
             complete = true
+            gate0 = true
         } catch (err) {
             console.error('Error:', err);
         } finally {
@@ -218,36 +246,46 @@
 
 <h4 class="page-link"><a href='/'>Home</a></h4>
 
-<button 
-    onclick={fetchAndProcessPlayers} 
-    disabled={loading}
-    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-6"
->
-    {loading ? `Processing players... (${progress.current}/${progress.total})` : 'Get Premier League Players'}
-</button>
+{#if !gate0}
+    <button 
+        onclick={fetchAndProcessPlayers} 
+        disabled={loading}
+    >
+        {loading ? `Processing players... (${progress.current}/${progress.total})` : 'Get Premier League Players'}
+    </button>
+{/if}
 
 {#if processedPlayers.length > 0}
     {#if gate1}
-    <div 
-    class="draft-order-container"
-    onmouseenter={showPopup}
-    onmouseleave={hidePopup}
->
-    <span class="draft-order-trigger">View Draft Order</span>
-    <div 
-        class="draft-order-popup"
-        class:visible={showDraftOrder}
-        onmouseenter={keepVisible}
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
+    <div class="draft-main-container">
+        <div class="draft-ticker-container">
+            <DraftTicker  ticker={draft}/>
+        </div>
+            {#if !draft.started}
+            <button onclick={beginDraft} class="start-draft-btn">Start Draft</button>
+            {/if}
+        <div 
+        class="draft-order-container"
+        onmouseenter={showPopup}
         onmouseleave={hidePopup}
     >
-        <div class="popup-content">
-            <h4>Draft Order</h4>
-            <div class="draft-list">
-                {#each draftOrderList as pick}
-                    <div class="draft-pick">
-                        Round {pick.round}, Pick {pick.pick}: {pick.id === 'player' ? playerTeam.name : pick.name}
-                    </div>
-                {/each}
+        <span class="draft-order-trigger">View Draft Order</span>
+        <div 
+            class="draft-order-popup"
+            class:visible={showDraftOrder}
+            onmouseenter={keepVisible}
+            onmouseleave={hidePopup}
+        >
+            <div class="popup-content">
+                <h4>Draft Order</h4>
+                <div class="draft-list">
+                    {#each draftOrderList as pick}
+                        <div class="draft-pick">
+                            Round {pick.round}, Pick {pick.pick}: {pick.id === 'player' ? playerTeam.name : pick.name}
+                        </div>
+                    {/each}
+                </div>
             </div>
         </div>
     </div>
@@ -274,7 +312,7 @@
                             onclick={createTeams} 
                             class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-6"
                         >
-                            Create Teams and Start Draft
+                            Create Teams and Prepare Draft
                         </button>
                     </div>
                 {/if}
@@ -298,6 +336,23 @@
 {/if}
 
 <style>
+    button {
+        background-color: #3b82f6;
+        color: #ffffff;             
+        font-weight: 700;           
+        padding: 0.5rem 1rem;
+        border-radius: 0.25rem;     
+        margin-bottom: 1.5rem;      
+    }
+
+    button:hover {
+        background-color: #1d4ed8;  /* hover:bg-blue-700 */
+    }
+
+    .start-draft-btn {
+        margin-right: 15rem;
+    }
+
     .page-container {
         display: flex;
         width: 100%;
@@ -307,11 +362,26 @@
         padding: 1rem;
         height: calc(100vh - 180px); /* Adjusted for draft order text */
     }
+    
+    .draft-main-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        max-width: 2000px;
+        margin: 0 auto 1rem auto;
+        padding: 0 2rem;
+    }
+
+    .draft-ticker-container {
+        flex: 1;
+        display: flex;
+        justify-content: flex-start;
+    }
 
     .draft-order-container {
         position: relative;
-        width: fit-content;
-        margin: 0 auto 1rem auto;
+        margin-left: 2rem;
     }
 
     .draft-order-trigger {
@@ -320,6 +390,7 @@
         cursor: pointer;
         font-size: 1.1rem;
         padding: 0.5rem 1rem;
+        /* margin-right: 10rem; */
     }
     
     .draft-order-popup {
@@ -341,7 +412,6 @@
     .draft-order-popup.visible {
         display: block;
     }
-
     .popup-content {
         max-height: 70vh;
         overflow-y: auto;

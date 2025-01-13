@@ -8,7 +8,8 @@
             defenders: [],
             keepers: [],
             playerCount: 0,
-            traits: []
+            traits: [],
+            transferBudget: 0
         }
     } = $props();
     let isExpanded = $state(false)
@@ -29,6 +30,7 @@
     <div class="team-header">
         <h3>{team.name}</h3>
         <h4>Draft Position: {team.draftOrder}</h4>
+        <h4>Transfer Budget: {team.transferBudget} </h4>
     </div>
     {#if isExpanded}
         <div class="expanded-content">

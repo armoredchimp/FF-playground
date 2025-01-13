@@ -7,7 +7,8 @@
             midfielders: [],
             defenders: [],
             keepers: [],
-            playerCount: 0
+            playerCount: 0,
+            transferBudget: 0
         }
     } = $props();
 </script>
@@ -16,6 +17,7 @@
     <div class="team-header">
         <h3>{team.name}</h3>
         <h4>Draft Position: {team.draftOrder}</h4>
+        <h4>Transfer Budget: {team.transferBudget}</h4>
     </div>
     <div class="content">
         <div class="stat-row">
