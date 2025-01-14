@@ -12,9 +12,10 @@
             transferBudget: 0
         }
     } = $props();
-    let isExpanded = $state(false)
-    function expanded(){
-        isExpanded = !isExpanded
+    let isExpanded = $state(false);
+    
+    function expanded() {
+        isExpanded = !isExpanded;
     }
 </script>
 
@@ -30,7 +31,7 @@
     <div class="team-header">
         <h3>{team.name}</h3>
         <h4>Draft Position: {team.draftOrder}</h4>
-        <h4>Transfer Budget: {team.transferBudget} </h4>
+        <h4>Transfer Budget: £{team.transferBudget.toFixed(2)}M</h4>
     </div>
     {#if isExpanded}
         <div class="expanded-content">
@@ -38,25 +39,69 @@
                 <span class="label">Total Players:</span>
                 <span class="value">{team.playerCount}</span>
             </div>
-            <div class="stat-row">
+            <div class="position-group">
                 <span class="label">Attackers:</span>
-                <span class="value">{team.attackers}</span>
+                <div class="player-images">
+                    {#each team.attackers as player}
+                        <div class="player-image-container">
+                            <img src={player.photo} alt={player.name} class="player-photo" />
+                            <div class="player-popup">
+                                <h5>{player.name || `${player.firstname} ${player.lastname}`}</h5>
+                                <p>Age: {player.age}</p>
+                                <p>Nationality: {player.nationality}</p>
+                            </div>
+                        </div>
+                    {/each}
+                </div>
             </div>
-            <div class="stat-row">
+            <div class="position-group">
                 <span class="label">Midfielders:</span>
-                <span class="value">{team.midfielders}</span>
+                <div class="player-images">
+                    {#each team.midfielders as player}
+                        <div class="player-image-container">
+                            <img src={player.photo} alt={player.name} class="player-photo" />
+                            <div class="player-popup">
+                                <h5>{player.name || `${player.firstname} ${player.lastname}`}</h5>
+                                <p>Age: {player.age}</p>
+                                <p>Nationality: {player.nationality}</p>
+                            </div>
+                        </div>
+                    {/each}
+                </div>
             </div>
-            <div class="stat-row">
+            <div class="position-group">
                 <span class="label">Defenders:</span>
-                <span class="value">{team.defenders}</span>
+                <div class="player-images">
+                    {#each team.defenders as player}
+                        <div class="player-image-container">
+                            <img src={player.photo} alt={player.name} class="player-photo" />
+                            <div class="player-popup">
+                                <h5>{player.name || `${player.firstname} ${player.lastname}`}</h5>
+                                <p>Age: {player.age}</p>
+                                <p>Nationality: {player.nationality}</p>
+                            </div>
+                        </div>
+                    {/each}
+                </div>
             </div>
-            <div class="stat-row">
+            <div class="position-group">
                 <span class="label">Keepers:</span>
-                <span class="value">{team.keepers}</span>
+                <div class="player-images">
+                    {#each team.keepers as player}
+                        <div class="player-image-container">
+                            <img src={player.photo} alt={player.name} class="player-photo" />
+                            <div class="player-popup">
+                                <h5>{player.name || `${player.firstname} ${player.lastname}`}</h5>
+                                <p>Age: {player.age}</p>
+                                <p>Nationality: {player.nationality}</p>
+                            </div>
+                        </div>
+                    {/each}
+                </div>
             </div>
-            <div class="stat-row traits-row">
+            <div class="traits-row">
                 <span class="label">Club Traits:</span>
-                <span class="value traits-list">
+                <span class="value">
                     {#if team.traits.length === 0}
                         None
                     {:else}
@@ -70,7 +115,7 @@
 
 <style>
     .team-card {
-        width: 300px; /* Fixed width */
+        width: 300px;
         text-align: left;
         background: white;
         border: 1px solid #e2e8f0;
@@ -84,50 +129,104 @@
         -webkit-appearance: none;
         font: inherit;
     }
+
     .team-card:hover {
         background-color: #f8fafc;
     }
+
     .team-card.expanded {
         background-color: #f8fafc;
     }
+
     .team-header {
         margin-bottom: 0.5rem;
     }
+
     .expanded-content {
         margin-top: 1rem;
         padding-top: 1rem;
         border-top: 1px solid #e2e8f0;
     }
-    .stat-row {
+
+    .stat-row, .position-group {
         display: flex;
-        justify-content: space-between;
-        align-items: center;
+        flex-direction: column;
         padding: 0.5rem 0;
     }
+
+    .player-images {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .player-image-container {
+        position: relative;
+        width: 50px;
+        height: 50px;
+    }
+
+    .player-photo {
+        width: 100%;
+        height: 100%;
+        border-radius: 25px;
+        object-fit: cover;
+    }
+
+    .player-popup {
+        display: none;
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: white;
+        padding: 0.75rem;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        width: 200px;
+        z-index: 10;
+    }
+
+    .player-image-container:hover .player-popup {
+        display: block;
+    }
+
+    .player-popup h5 {
+        margin: 0 0 0.5rem 0;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .player-popup p {
+        margin: 0.25rem 0;
+        font-size: 0.8rem;
+        color: #4a5568;
+    }
+
     .traits-row {
         border-top: 1px solid #e2e8f0;
         margin-top: 0.5rem;
         padding-top: 1rem;
     }
-    .traits-list {
-        text-align: right;
-        font-style: italic;
-    }
-    .label {
-        font-weight: 500;
-        color: #4a5568;
-    }
-    .value {
-        color: #2d3748;
-    }
+
     h3 {
         margin: 0;
         font-size: 1.1rem;
         color: #333;
     }
+
     h4 {
         margin: 0.25rem 0 0 0;
         font-size: 0.9rem;
         color: #666;
+    }
+
+    .label {
+        font-weight: 500;
+        color: #4a5568;
+    }
+
+    .value {
+        color: #2d3748;
     }
 </style>
