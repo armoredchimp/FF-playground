@@ -1,3 +1,4 @@
+
 import { teams } from "$lib/teams.svelte";
 
 
@@ -135,13 +136,14 @@ export function generateClubTraits() {
         'Favors Defense',
         'Strong Passing',
         'High Pressure',
-        'Counter Attack',
-        'Possession Based',
+        'Favors Attacking',
         'Wing Play',
-        'Direct Football',
-        'Youth Focus',
+        'Star Powered',
         'Aggressive Tackling',
-        'Short Passing'
+        'Youth Focus',
+        'Favors Experience',
+        'Teamwork Focus',
+        'Set Piece Specialists'
     ];
 
     // For each team in teams object
@@ -159,6 +161,14 @@ export function generateClubTraits() {
             selectedTraits.push(availableTraits[randomIndex]);
             // Remove selected trait to avoid duplicates within same team
             availableTraits.splice(randomIndex, 1);
+
+            if (availableTraits[randomIndex] === 'Favors Defense') {
+                const attackIndex = availableTraits.indexOf('Favors Attacking');
+                if (attackIndex > -1) availableTraits.splice(attackIndex, 1);
+            } else if (availableTraits[randomIndex] === 'Favors Attacking') {
+                const defenseIndex = availableTraits.indexOf('Favors Defense');
+                if (defenseIndex > -1) availableTraits.splice(defenseIndex, 1);
+            }
         }
 
         // Assign traits to team
