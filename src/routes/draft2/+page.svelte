@@ -95,41 +95,22 @@
     }
 
 
-    function beginDraft(){
-        draft.started = true
-        
-        let currPick = draftOrderList[0];
-        let nextPick = draftOrderList[1]
+    function beginDraft() {
+        if (!draft.started) {
+            draft.started = true;
+            draft.currentRound = 1;
+            draft.currentPick = 1;
 
-        draft.currentTeam = currPick.id === 'player' ? playerTeam.name : currPick.name;
-        draft.nextTeam = nextPick.id === 'player' ? playerTeam.name : nextPick.name;
+            let currPick = draftOrderList[0];
+            let nextPick = draftOrderList[1];
 
-        draft.currentRound = 1;
-        draft.currentPick = 1;
-        
-    }
-
-    function advanceDraft() {
-        // Calculate current pick index in draftOrderList
-        let pickIndex = (draft.currentRound - 1) * 14 + (draft.currentPick - 1);
-        
-        // If we've reached the end of the draft (210 picks - 15 rounds * 14 teams)
-        if (pickIndex >= 210) {
-            draft.complete = true;
-            console.log("Draft complete!");
-            return;
+            draft.currentTeam = currPick.id === 'player' ? playerTeam.name : currPick.name;
+            draft.nextTeam = nextPick.id === 'player' ? playerTeam.name : nextPick.name;
         }
+}
 
-        // Update current and next teams
-        draft.currentTeam = draftOrderList[pickIndex].id === 'player' ? 
-            playerTeam.name : draftOrderList[pickIndex].name;
-        
-        draft.nextTeam = pickIndex + 1 < 210 ? 
-            (draftOrderList[pickIndex + 1].id === 'player' ? 
-                playerTeam.name : draftOrderList[pickIndex + 1].name) : 
-            'None';
-
-        // Update round and pick numbers
+function advanceDraft() {
+        // First increment the round and pick numbers
         if (draft.currentPick === 14) {
             draft.currentRound++;
             draft.currentPick = 1;
@@ -137,13 +118,25 @@
             draft.currentPick++;
         }
 
-        // Initiate the appropriate pick function
-        if (draftOrderList[pickIndex].id === 'player') {
-            handlePlayerPick();
-        // } else {
-        //     handleAIPick(teams[draftOrderList[pickIndex].id]);
-        // }
-}}
+        // Then calculate pick index for the NEW round and pick numbers
+        let pickIndex = (draft.currentRound - 1) * 14 + (draft.currentPick - 1);
+        
+        // If we've reached the end of the draft
+        if (pickIndex >= 210) {
+            draft.complete = true;
+            console.log("Draft complete!");
+            return;
+        }
+
+        // Update current and next teams based on the new pick index
+        draft.currentTeam = draftOrderList[pickIndex].id === 'player' ? 
+            playerTeam.name : draftOrderList[pickIndex].name;
+        
+        draft.nextTeam = pickIndex + 1 < 210 ? 
+            (draftOrderList[pickIndex + 1].id === 'player' ? 
+                playerTeam.name : draftOrderList[pickIndex + 1].name) : 
+            'None';
+}
 
 function handlePlayerPick(player, statistics, transferValue) {
     if (transferValue > playerTeam.transferBudget) {

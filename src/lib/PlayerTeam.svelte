@@ -17,30 +17,73 @@
     <div class="team-header">
         <h3>{team.name}</h3>
         <h4>Draft Position: {team.draftOrder}</h4>
-        <h4>Transfer Budget: {team.transferBudget}</h4>
+        <h4>Transfer Budget: £{team.transferBudget.toFixed(2)}M</h4>
     </div>
     <div class="content">
         <div class="stat-row">
             <span class="label">Total Players:</span>
             <span class="value">{team.playerCount}</span>
         </div>
-        <div class="stat-row">
+        <div class="position-group">
             <span class="label">Attackers:</span>
-            <span class="value">{team.attackers}</span>
+            <div class="player-images">
+                {#each team.attackers as player}
+                    <div class="player-image-container">
+                        <img src={player.photo} alt={player.name} class="player-photo" />
+                        <div class="player-popup">
+                            <h5>{player.name || `${player.firstname} ${player.lastname}`}</h5>
+                            <p>Age: {player.age}</p>
+                            <p>Nationality: {player.nationality}</p>
+                        </div>
+                    </div>
+                {/each}
+            </div>
         </div>
-        <div class="stat-row">
+        <div class="position-group">
             <span class="label">Midfielders:</span>
-            <span class="value">{team.midfielders}</span>
+            <div class="player-images">
+                {#each team.midfielders as player}
+                    <div class="player-image-container">
+                        <img src={player.photo} alt={player.name} class="player-photo" />
+                        <div class="player-popup">
+                            <h5>{player.name || `${player.firstname} ${player.lastname}`}</h5>
+                            <p>Age: {player.age}</p>
+                            <p>Nationality: {player.nationality}</p>
+                        </div>
+                    </div>
+                {/each}
+            </div>
         </div>
-        <div class="stat-row">
+        <div class="position-group">
             <span class="label">Defenders:</span>
-            <span class="value">{team.defenders}</span>
+            <div class="player-images">
+                {#each team.defenders as player}
+                    <div class="player-image-container">
+                        <img src={player.photo} alt={player.name} class="player-photo" />
+                        <div class="player-popup">
+                            <h5>{player.name || `${player.firstname} ${player.lastname}`}</h5>
+                            <p>Age: {player.age}</p>
+                            <p>Nationality: {player.nationality}</p>
+                        </div>
+                    </div>
+                {/each}
+            </div>
         </div>
-        <div class="stat-row">
+        <div class="position-group">
             <span class="label">Keepers:</span>
-            <span class="value">{team.keepers}</span>
+            <div class="player-images">
+                {#each team.keepers as player}
+                    <div class="player-image-container">
+                        <img src={player.photo} alt={player.name} class="player-photo" />
+                        <div class="player-popup">
+                            <h5>{player.name || `${player.firstname} ${player.lastname}`}</h5>
+                            <p>Age: {player.age}</p>
+                            <p>Nationality: {player.nationality}</p>
+                        </div>
+                    </div>
+                {/each}
+            </div>
         </div>
-        
     </div>
 </div>
 
@@ -55,35 +98,86 @@
         background-color: #f8fafc;
         max-width: 400px;
     }
+
     .team-header {
         margin-bottom: 1rem;
         padding-bottom: 1rem;
         border-bottom: 2px solid #e2e8f0;
     }
+
     .content {
         margin-top: 1rem;
     }
-    .stat-row {
+
+    .stat-row, .position-group {
         display: flex;
-        justify-content: space-between;
-        align-items: center;
+        flex-direction: column;
         padding: 0.75rem 0;
     }
+
     .label {
         font-weight: 500;
         color: #4a5568;
         font-size: 1.1rem;
+        margin-bottom: 0.5rem;
     }
-    .value {
-        color: #2d3748;
-        font-size: 1.1rem;
+
+    .player-images {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
     }
+
+    .player-image-container {
+        position: relative;
+        width: 50px;
+        height: 50px;
+    }
+
+    .player-photo {
+        width: 100%;
+        height: 100%;
+        border-radius: 25px;
+        object-fit: cover;
+    }
+
+    .player-popup {
+        display: none;
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: white;
+        padding: 0.75rem;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        width: 200px;
+        z-index: 10;
+    }
+
+    .player-image-container:hover .player-popup {
+        display: block;
+    }
+
+    .player-popup h5 {
+        margin: 0 0 0.5rem 0;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .player-popup p {
+        margin: 0.25rem 0;
+        font-size: 0.8rem;
+        color: #4a5568;
+    }
+
     h3 {
         margin: 0;
         font-size: 1.5rem;
         color: #333;
         font-weight: bold;
     }
+
     h4 {
         margin: 0.5rem 0 0 0;
         font-size: 1.1rem;
