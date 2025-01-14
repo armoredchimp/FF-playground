@@ -21,6 +21,7 @@
 
     let draft = $state({
         started: false,
+        complete: false,
         currentRound: 1,
         currentPick: 1,
         currentTeam: '',
@@ -108,6 +109,74 @@
         
     }
 
+    function advanceDraft() {
+        // Calculate current pick index in draftOrderList
+        let pickIndex = (draft.currentRound - 1) * 14 + (draft.currentPick - 1);
+        
+        // If we've reached the end of the draft (210 picks - 15 rounds * 14 teams)
+        if (pickIndex >= 210) {
+            draft.complete = true;
+            console.log("Draft complete!");
+            return;
+        }
+
+        // Update current and next teams
+        draft.currentTeam = draftOrderList[pickIndex].id === 'player' ? 
+            playerTeam.name : draftOrderList[pickIndex].name;
+        
+        draft.nextTeam = pickIndex + 1 < 210 ? 
+            (draftOrderList[pickIndex + 1].id === 'player' ? 
+                playerTeam.name : draftOrderList[pickIndex + 1].name) : 
+            'None';
+
+        // Update round and pick numbers
+        if (draft.currentPick === 14) {
+            draft.currentRound++;
+            draft.currentPick = 1;
+        } else {
+            draft.currentPick++;
+        }
+
+        // Initiate the appropriate pick function
+        if (draftOrderList[pickIndex].id === 'player') {
+            handlePlayerPick();
+        // } else {
+        //     handleAIPick(teams[draftOrderList[pickIndex].id]);
+        // }
+}}
+
+function handlePlayerPick(player, statistics, transferValue) {
+    if (transferValue > playerTeam.transferBudget) {
+        console.log("Insufficient funds");
+        return;
+    }
+
+    const position = statistics?.games?.position?.toLowerCase();
+
+    switch(position) {
+        case 'goalkeeper':
+            playerTeam.keepers.push(player);
+            break;
+        case 'defender':
+            playerTeam.defenders.push(player);
+            break;
+        case 'midfielder':
+            playerTeam.midfielders.push(player);
+            break;
+        case 'attacker':
+        case 'forward':
+            playerTeam.attackers.push(player);
+            break;
+        default:
+            console.log("Invalid position:", position);
+            return;
+    }
+
+    playerTeam.transferBudget -= transferValue;
+    playerTeam.playerCount++;
+    processedPlayers = processedPlayers.filter(p => p.player.id !== player.id);
+    advanceDraft();
+}
     function generateClubName() {
         const availableFirsts = firstParts.filter(name => 
             !firstNameCounts[name] || firstNameCounts[name] < 2
@@ -265,6 +334,13 @@
             {#if !draft.started}
             <button onclick={beginDraft} class="start-draft-btn">Start Draft</button>
             {/if}
+            {#if draft.started}
+                {#if draft.currentTeam !== playerTeam.name}
+                    <button onclick={advanceDraft} class="advance-btn">
+                        Advance Draft
+                    </button>
+                {/if}
+            {/if}
         <div 
         class="draft-order-container"
         onmouseenter={showPopup}
@@ -300,6 +376,8 @@
                     player={player}
                     playerStats={statistics}
                     transferValue={transferValue}
+                    onDraft={()=> handlePlayerPick(player, statistics, transferValue)}
+                    isDraftable={draft.started && draft.currentTeam === playerTeam.name}
                 />
             {/each}
         </div>

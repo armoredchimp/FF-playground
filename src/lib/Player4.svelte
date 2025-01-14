@@ -10,19 +10,24 @@
             photo: ''
         },
         playerStats = null,
-        transferValue = 0
+        transferValue = 0,
+        onDraft,
+        isDraftable = false
     } = $props();
 
     let isExpanded = $state(false);
+
+    function handleDraftClick(e) {
+        e.stopPropagation();
+        if (isDraftable){
+            onDraft()
+        }
+    }
 
     function toggleExpand() {
         isExpanded = !isExpanded;
     }
 
-    function handleDraftClick(e) {
-        e.stopPropagation();
-        // Draft logic will go here
-    }
 </script>
 
 <div 
