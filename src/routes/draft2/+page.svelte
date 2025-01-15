@@ -6,6 +6,7 @@
     import PlayerTeam from "$lib/PlayerTeam.svelte";
     import { teams } from "$lib/teams.svelte";
     import { calculateTransferValue, generateClubTraits } from "$lib/utils.svelte"
+    import { getPositionalNeedScore, getValueBasedScore, executePick, advanceDraft, skipToPlayerPick } from '$lib/draftLogic.svelte';
     import { firstParts, secondParts, commonNames } from "$lib/clubNameData.svelte"
    
     let playerTeam = $state({
@@ -109,151 +110,23 @@
         }
     }
 
-    function getPositionalNeedScore(team) {
-        const positions = {
-            'goalkeeper': team.keepers.length,
-            'defender': team.defenders.length,
-            'midfielder': team.midfielders.length,
-            'attacker': team.attackers.length
-        };
-        
-        // Find the most filled position
-        const maxCount = Math.max(...Object.values(positions));
-        
-        // Calculate scores based on difference from most filled position
-        return {
-            'goalkeeper': positions.goalkeeper === 0 ? 6 : 0,  // Must get a keeper
-            'defender': (maxCount - positions.defender) * 2,
-            'midfielder': (maxCount - positions.midfielder) * 2,
-            'attacker': (maxCount - positions.attacker) * 2
-        };
-    }
-
-    function getValueBasedScore(index) {
-        if (index < 5) {
-            return Math.floor(Math.random() * 3) + 8;  // 8-10
-        } else if (index < 10) {
-            return Math.floor(Math.random() * 4) + 4;  // 4-7
-        } else {
-            return Math.floor(Math.random() * 3) + 1;  // 1-3
-        }
-    }
-
-    function skipToPlayerPick() {
-        let currentIndex = (draft.currentRound - 1) * 14 + (draft.currentPick - 1);
-        let nextPlayerIndex = currentIndex;
-        
-        while (nextPlayerIndex < 210 && 
-            draftOrderList[nextPlayerIndex].id !== 'player') {
-            executePick(draftOrderList[nextPlayerIndex].id, false);
-            nextPlayerIndex++;
-        }
-
-        // Update draft state to the player's turn
-        draft.currentRound = Math.floor(nextPlayerIndex / 14) + 1;
-        draft.currentPick = (nextPlayerIndex % 14) + 1;
-        
-        draft.currentTeam = draftOrderList[nextPlayerIndex].id === 'player' ? 
-            playerTeam.name : draftOrderList[nextPlayerIndex].name;
-        
-        draft.nextTeam = nextPlayerIndex + 1 < 210 ? 
-            (draftOrderList[nextPlayerIndex + 1].id === 'player' ? 
-                playerTeam.name : draftOrderList[nextPlayerIndex + 1].name) : 
-            'None';
-    }
-
-    function executePick(teamId, isPlayer, player = null, statistics = null, transferValue = null) {
-        const team = teamId === 'player' ? playerTeam : teams[teamId];
-        
-        // For AI picks
-        if (!isPlayer) {
-            const sliceSize = Math.floor(Math.random() * 5) + 10;
-            const affordablePlayers = processedPlayers.filter(p => p.transferValue <= team.transferBudget);
-            
-            if (affordablePlayers.length === 0) {
-                console.log("No affordable players available");
-                advanceDraft();
-                return;
-            }
-
-            const positionScores = getPositionalNeedScore(team);
-            const scoredPlayers = affordablePlayers.slice(0, sliceSize).map((p, index) => ({
-                ...p,
-                score: getValueBasedScore(index) + 
-                    (p.statistics?.games?.position?.toLowerCase() ? 
-                        positionScores[p.statistics.games.position.toLowerCase()] || 0 : 0)
-            })).sort((a, b) => b.score - a.score);
-
-            if (scoredPlayers.length === 0) return;
-            
-            player = scoredPlayers[0].player;
-            statistics = scoredPlayers[0].statistics;
-            transferValue = scoredPlayers[0].transferValue;
-        }
-
-        // For both AI and player picks
-        if (transferValue > team.transferBudget) {
-            console.log("Insufficient funds");
-            return false;
-        }
-
-        const position = statistics?.games?.position?.toLowerCase();
-        if (!position) return false;
-
-        // Update team
-        switch(position) {
-            case 'goalkeeper': team.keepers.push(player); break;
-            case 'defender': team.defenders.push(player); break;
-            case 'midfielder': team.midfielders.push(player); break;
-            case 'attacker':
-            case 'forward': team.attackers.push(player); break;
-            default: return false;
-        }
-
-        team.transferBudget -= transferValue;
-        team.playerCount++;
-        processedPlayers = processedPlayers.filter(p => p.player.id !== player.id);
-        return true;
-    }
-
     function handleAIPick(teamId) {
-        if (executePick(teamId, false)) {
-            advanceDraft();
+        const result = executePick(teamId, false, playerTeam, teams, processedPlayers);
+        if (result) {
+            processedPlayers = result.processedPlayers;
+            advanceDraft(draft, draftOrderList, playerTeam);
         }
     }
 
-    function advanceDraft() {
-        // If this is a newly completed pick, advance to next pick
-        if (draft.currentPick === 14) {
-            draft.currentRound++;
-            draft.currentPick = 1;
-        } else {
-            draft.currentPick++;
-        }
-
-        let pickIndex = (draft.currentRound - 1) * 14 + (draft.currentPick - 1);
-        
-        if (pickIndex >= 210) {
-            draft.complete = true;
-            console.log("Draft complete!");
-            return;
-        }
-
-        // Update current and next teams based on the new pick index
-        draft.currentTeam = draftOrderList[pickIndex].id === 'player' ? 
-            playerTeam.name : draftOrderList[pickIndex].name;
-        
-        draft.nextTeam = pickIndex + 1 < 210 ? 
-            (draftOrderList[pickIndex + 1].id === 'player' ? 
-                playerTeam.name : draftOrderList[pickIndex + 1].name) : 
-            'None';
-        }
 
     function handlePlayerPick(player, statistics, transferValue) {
-        if (executePick('player', true, player, statistics, transferValue)) {
-            advanceDraft();
+        const result = executePick('player', true, playerTeam, teams, processedPlayers, player, statistics, transferValue);
+        if (result) {
+            processedPlayers = result.processedPlayers;
+            advanceDraft(draft, draftOrderList, playerTeam);
         }
     }
+
     function generateClubName() {
         const availableFirsts = firstParts.filter(name => 
             !firstNameCounts[name] || firstNameCounts[name] < 2
@@ -413,18 +286,20 @@
             {/if}
             {#if draft.started}
             {#if draft.currentTeam !== playerTeam.name}
-                <div class="draft-buttons">
-                    <button 
-                        onclick={() => handleAIPick(draftOrderList[(draft.currentRound - 1) * 14 + (draft.currentPick - 1)].id)} 
-                        class="advance-btn">Advance Draft
-                    </button>
-                    <button 
-                        onclick={skipToPlayerPick} 
-                        class="skip-btn">Skip to Next Player Pick
-                    </button>
-                </div>
+                    <div class="draft-buttons">
+                        <button 
+                            onclick={() => handleAIPick(draftOrderList[(draft.currentRound - 1) * 14 + (draft.currentPick - 1)].id)} 
+                            class="advance-btn">Advance Draft
+                        </button>
+                        <button 
+                            onclick={() => {
+                                processedPlayers = skipToPlayerPick(draft, draftOrderList, playerTeam, teams, processedPlayers);
+                            }} 
+                            class="skip-btn">Skip to Next Player Pick
+                        </button>
+                    </div>
+                {/if}
             {/if}
-        {/if}
         <div 
         class="draft-order-container"
         onmouseenter={showPopup}
