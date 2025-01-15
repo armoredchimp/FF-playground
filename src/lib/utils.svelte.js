@@ -1,6 +1,6 @@
 
 import { teams } from "$lib/teams.svelte";
-
+import { firstParts, secondParts, commonNames } from "./clubNameData.svelte";
 
 export function calculateTransferValue(player, statistics) {
     let baseValue = 2.0;
@@ -174,4 +174,93 @@ export function generateClubTraits() {
         // Assign traits to team
         teams[`team${i}`].traits = selectedTraits;
     }
+}
+
+export function generateClubName(firstNameCounts, usedSecondNames) {
+    const availableFirsts = firstParts.filter(name => 
+        !firstNameCounts[name] || firstNameCounts[name] < 2
+    );
+    
+    const firstName = availableFirsts[Math.floor(Math.random() * availableFirsts.length)];
+    firstNameCounts[firstName] = (firstNameCounts[firstName] || 0) + 1;
+
+    if (Math.random() < 0.8) {
+        const unusedNonCommon = secondParts.filter(name => 
+            !commonNames.includes(name) && !usedSecondNames.has(name)
+        );
+        
+        const selectionPool = [...unusedNonCommon, ...commonNames, ...commonNames];
+        
+        if (selectionPool.length > 0) {
+            const secondName = selectionPool[Math.floor(Math.random() * selectionPool.length)];
+            
+            if (!commonNames.includes(secondName)) {
+                usedSecondNames.add(secondName);
+            }
+            
+            return `${firstName} ${secondName}`;
+        }
+    }
+    
+    return firstName;
+}
+
+export function assignDraftOrder(numberPool) {
+    if (numberPool.length === 0) {
+        return null;
+    }
+    
+    const randomIndex = Math.floor(Math.random() * numberPool.length);
+    return numberPool.splice(randomIndex, 1)[0];
+}
+
+export function processPlayersData(players, container) {
+    for (const item of players) {
+        const eplStats = item.statistics.find(stat => 
+            stat.league.name === 'Premier League' && 
+            stat.games.appearences !== null
+        );
+
+        if (eplStats) {
+            container.push({
+                player: item.player,
+                statistics: eplStats,
+                transferValue: calculateTransferValue(item.player, eplStats)
+            });
+        }
+    }
+}
+
+// Helper function for draft order organization
+export function organizeDraftOrder(playerTeam, teams) {
+    // Get all teams including player team
+    const allTeams = [
+        { id: 'player', ...playerTeam },
+        ...Object.entries(teams).map(([key, team]) => ({ id: key, ...team }))
+    ];
+
+    // Sort by draft order
+    allTeams.sort((a, b) => a.draftOrder - b.draftOrder);
+
+    // Create snake draft order for 15 rounds
+    const fullDraftOrder = [];
+    for (let round = 0; round < 15; round++) {
+        if (round % 2 === 0) {
+            // Forward order
+            fullDraftOrder.push(...allTeams.map(team => ({
+                ...team,
+                round: round + 1,
+                pick: round % 2 === 0 ? allTeams.indexOf(team) + 1 : allTeams.length - allTeams.indexOf(team)
+            })));
+        } else {
+            // Reverse order
+            fullDraftOrder.push(...[...allTeams].reverse().map(team => ({
+                ...team,
+                round: round + 1,
+                pick: round % 2 === 0 ? allTeams.indexOf(team) + 1 : allTeams.length - allTeams.indexOf(team)
+            })));
+        }
+    }
+
+    return fullDraftOrder;
 }

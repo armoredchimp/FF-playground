@@ -1,267 +1,183 @@
-<script lang="ts">
-    import axios from "axios";
-    import Player4 from "$lib/Player4.svelte";
-    import DraftTicker from "$lib/DraftTicker.svelte";
-    import Team from "$lib/Team.svelte";
-    import PlayerTeam from "$lib/PlayerTeam.svelte";
-    import { teams } from "$lib/teams.svelte";
-    import { calculateTransferValue, generateClubTraits } from "$lib/utils.svelte"
-    import { getPositionalNeedScore, getValueBasedScore, executePick, advanceDraft, skipToPlayerPick } from '$lib/draftLogic.svelte';
-    import { firstParts, secondParts, commonNames } from "$lib/clubNameData.svelte"
-   
-    let playerTeam = $state({
-        name: '',
-        draftOrder: 0,
-        attackers: [],
-        midfielders: [],
-        defenders: [],
-        keepers: [],
-        playerCount: 0,
-        transferBudget: 250
-    })
+<script>
+import axios from "axios";
+import Player4 from "$lib/Player4.svelte";
+import DraftTicker from "$lib/DraftTicker.svelte";
+import Team from "$lib/Team.svelte";
+import PlayerTeam from "$lib/PlayerTeam.svelte";
+import { teams } from "$lib/teams.svelte";
+import { 
+    calculateTransferValue, 
+    generateClubTraits, 
+    generateClubName, 
+    assignDraftOrder, 
+    processPlayersData,
+    organizeDraftOrder 
+} from "$lib/utils.svelte";
+import { 
+    getPositionalNeedScore, 
+    getValueBasedScore, 
+    executePick, 
+    advanceDraft, 
+    skipToPlayerPick 
+} from '$lib/draftLogic.svelte';
 
-    let draft = $state({
-        started: false,
-        complete: false,
-        currentRound: 1,
-        currentPick: 1,
-        currentTeam: '',
-        nextTeam: ''
+let playerTeam = $state({
+    name: '',
+    draftOrder: 0,
+    attackers: [],
+    midfielders: [],
+    defenders: [],
+    keepers: [],
+    playerCount: 0,
+    transferBudget: 250
+});
 
-    })
+let draft = $state({
+    started: false,
+    complete: false,
+    currentRound: 1,
+    currentPick: 1,
+    currentTeam: '',
+    nextTeam: ''
+});
 
-    let processedPlayers = $state([]); 
-    let loading = $state(false);
-    let progress = $state({ current: 0, total: 0 });
-    let complete = $state(false);
-    let gate0 = $state(false);
-    let gate1 = $state(false);
-    let draftOrderList = $state([]);
-    let showDraftOrder = $state(false)
-    let popupTimer;
+let processedPlayers = $state([]); 
+let loading = $state(false);
+let progress = $state({ current: 0, total: 0 });
+let complete = $state(false);
+let gate0 = $state(false);
+let gate1 = $state(false);
+let draftOrderList = $state([]);
+let showDraftOrder = $state(false);
+let popupTimer;
 
-    let numberPool = Array.from({length:14}, (_,i) => i+1);
+let numberPool = Array.from({length:14}, (_,i) => i+1);
+const firstNameCounts = {};
+const usedSecondNames = new Set();
+
+function showPopup() {
+    clearTimeout(popupTimer);
+    showDraftOrder = true;
+}
+
+function hidePopup() {
+    popupTimer = setTimeout(() => {
+        showDraftOrder = false;
+    }, 500);
+}
+
+function keepVisible() {
+    clearTimeout(popupTimer);
+}
+
+function beginDraft() {
+    if (!draft.started) {
+        draft.started = true;
+        draft.currentRound = 1;
+        draft.currentPick = 1;
+
+        let currPick = draftOrderList[0];
+        let nextPick = draftOrderList[1];
+
+        draft.currentTeam = currPick.id === 'player' ? playerTeam.name : currPick.name;
+        draft.nextTeam = nextPick.id === 'player' ? playerTeam.name : nextPick.name;
+    }
+}
+
+function handleAIPick(teamId) {
+    const result = executePick(teamId, false, playerTeam, teams, processedPlayers);
+    if (result) {
+        processedPlayers = result.processedPlayers;
+        advanceDraft(draft, draftOrderList, playerTeam);
+    }
+}
+
+function handlePlayerPick(player, statistics, transferValue) {
+    const result = executePick('player', true, playerTeam, teams, processedPlayers, player, statistics, transferValue);
+    if (result) {
+        processedPlayers = result.processedPlayers;
+        advanceDraft(draft, draftOrderList, playerTeam);
+    }
+}
+
+function playerName() {
+    const name = prompt("Please enter a name for your team:");
+    if (name !== null) {
+        return name;
+    }
+    return '';
+}
+
+function createTeams() {
+    Object.keys(firstNameCounts).forEach(key => delete firstNameCounts[key]);
+    usedSecondNames.clear();
     
-    const firstNameCounts = {};
-    const usedSecondNames = new Set();
-
-    function showPopup(){
-        clearTimeout(popupTimer);
-        showDraftOrder = true;
+    for(let i = 1; i <= 13; i++) {
+        teams[`team${i}`].name = generateClubName(firstNameCounts, usedSecondNames);
+        teams[`team${i}`].draftOrder = assignDraftOrder(numberPool);
     }
+    playerTeam.draftOrder = assignDraftOrder(numberPool);
+    generateClubTraits();
+    draftOrderList = organizeDraftOrder(playerTeam, teams);
+    gate1 = true;
+    playerTeam.name = playerName();
+}
 
-    function hidePopup(){
-        popupTimer = setTimeout(()=>{
-            showDraftOrder = false;
-       }, 500)
-    }
-
-    function keepVisible(){
-        clearTimeout(popupTimer)
-    }
-
-    function organizeDraftOrder() {
-        // Get all teams including player team
-        const allTeams = [
-            { id: 'player', ...playerTeam },
-            ...Object.entries(teams).map(([key, team]) => ({ id: key, ...team }))
-        ];
-
-        // Sort by draft order
-        allTeams.sort((a, b) => a.draftOrder - b.draftOrder);
-
-        // Create snake draft order for 15 rounds (typical squad size)
-        const fullDraftOrder = [];
-        for (let round = 0; round < 15; round++) {
-            if (round % 2 === 0) {
-                // Forward order
-                fullDraftOrder.push(...allTeams.map(team => ({
-                    ...team,
-                    round: round + 1,
-                    pick: round % 2 === 0 ? allTeams.indexOf(team) + 1 : allTeams.length - allTeams.indexOf(team)
-                })));
-            } else {
-                // Reverse order
-                fullDraftOrder.push(...[...allTeams].reverse().map(team => ({
-                    ...team,
-                    round: round + 1,
-                    pick: round % 2 === 0 ? allTeams.indexOf(team) + 1 : allTeams.length - allTeams.indexOf(team)
-                })));
+async function fetchAndProcessPlayers() {
+    if (loading) return;
+    loading = true;
+    const tempContainer = [];
+   
+    try {
+        const initialOptions = {
+            method: 'GET',
+            url: 'https://api-football-v1.p.rapidapi.com/v3/players',
+            params: {
+                league: '39',
+                season: '2023',
+                page: 1
+            },
+            headers: {
+                'x-rapidapi-key': import.meta.env.VITE_API_KEY,
+                'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
             }
-        }
+        };
 
-        draftOrderList = fullDraftOrder;
-        console.log("Full draft order:", draftOrderList);
-        return draftOrderList;
-    }
-
-
-    function beginDraft() {
-        if (!draft.started) {
-            draft.started = true;
-            draft.currentRound = 1;
-            draft.currentPick = 1;
-
-            let currPick = draftOrderList[0];
-            let nextPick = draftOrderList[1];
-
-            draft.currentTeam = currPick.id === 'player' ? playerTeam.name : currPick.name;
-            draft.nextTeam = nextPick.id === 'player' ? playerTeam.name : nextPick.name;
-        }
-    }
-
-    function handleAIPick(teamId) {
-        const result = executePick(teamId, false, playerTeam, teams, processedPlayers);
-        if (result) {
-            processedPlayers = result.processedPlayers;
-            advanceDraft(draft, draftOrderList, playerTeam);
-        }
-    }
-
-
-    function handlePlayerPick(player, statistics, transferValue) {
-        const result = executePick('player', true, playerTeam, teams, processedPlayers, player, statistics, transferValue);
-        if (result) {
-            processedPlayers = result.processedPlayers;
-            advanceDraft(draft, draftOrderList, playerTeam);
-        }
-    }
-
-    function generateClubName() {
-        const availableFirsts = firstParts.filter(name => 
-            !firstNameCounts[name] || firstNameCounts[name] < 2
-        );
+        const firstResponse = await axios.request(initialOptions);
+        progress.total = firstResponse.data.paging.total;
         
-        const firstName = availableFirsts[Math.floor(Math.random() * availableFirsts.length)];
-        firstNameCounts[firstName] = (firstNameCounts[firstName] || 0) + 1;
-
-        if (Math.random() < 0.8) {
-            const unusedNonCommon = secondParts.filter(name => 
-                !commonNames.includes(name) && !usedSecondNames.has(name)
-            );
-            
-            const selectionPool = [...unusedNonCommon, ...commonNames, ...commonNames];
-            
-            if (selectionPool.length > 0) {
-                const secondName = selectionPool[Math.floor(Math.random() * selectionPool.length)];
-                
-                if (!commonNames.includes(secondName)) {
-                    usedSecondNames.add(secondName);
-                }
-                
-                return `${firstName} ${secondName}`;
-            }
+        if (firstResponse.data.response?.length) {
+            processPlayersData(firstResponse.data.response, tempContainer);
         }
-        
-        return firstName;
-    }
 
-    function playerName() {
-        const name = prompt("Please enter a name for your team:")
-        if (name !== null){
-            return name
-        }
-        return ''
-    }
-
-    function assignDraftOrder() {
-        if (numberPool.length === 0){
-            return null;
-        }
-        
-        const randomIndex = Math.floor(Math.random() * numberPool.length)
-        return numberPool.splice(randomIndex, 1)[0]
-    }
-
-    function createTeams(){
-        Object.keys(firstNameCounts).forEach(key => delete firstNameCounts[key]);
-        usedSecondNames.clear();
-        
-        for(let i = 1; i <= 13; i++){
-            teams[`team${i}`].name = generateClubName();
-            teams[`team${i}`].draftOrder = assignDraftOrder();
-            console.log(teams[`team${i}`].name);
-        }
-        playerTeam.draftOrder = assignDraftOrder();
-        generateClubTraits();
-        organizeDraftOrder();
-        console.log(teams)
-        console.log(playerTeam.draftOrder)
-        gate1 = true
-        playerTeam.name = playerName()
-    }
-
-    async function fetchAndProcessPlayers() {
-        if (loading) return;
-        loading = true;
-        const tempContainer = [];
-       
-        try {
-            const initialOptions = {
-                method: 'GET',
-                url: 'https://api-football-v1.p.rapidapi.com/v3/players',
+        for (let i = 2; i <= progress.total; i++) {
+            progress.current = i;
+            const options = {
+                ...initialOptions,
                 params: {
-                    league: '39',
-                    season: '2023',
-                    page: 1
-                },
-                headers: {
-                    'x-rapidapi-key': import.meta.env.VITE_API_KEY,
-                    'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+                    ...initialOptions.params,
+                    page: i
                 }
             };
-
-            const firstResponse = await axios.request(initialOptions);
-            progress.total = firstResponse.data.paging.total;
             
-            if (firstResponse.data.response?.length) {
-                processPlayersData(firstResponse.data.response, tempContainer);
-            }
-
-            for (let i = 2; i <= progress.total; i++) {
-                progress.current = i;
-                const options = {
-                    ...initialOptions,
-                    params: {
-                        ...initialOptions.params,
-                        page: i
-                    }
-                };
-                
-                const response = await axios.request(options);
-                if (response.data.response?.length) {
-                    processPlayersData(response.data.response, tempContainer);
-                }
-            }
-            
-            processedPlayers = tempContainer.sort((a, b) => b.transferValue - a.transferValue);
-            console.log(`Successfully processed ${processedPlayers.length} Premier League players`);
-            complete = true
-            gate0 = true
-        } catch (err) {
-            console.error('Error:', err);
-        } finally {
-            loading = false;
-        }
-    }
-
-    function processPlayersData(players, container) {
-        for (const item of players) {
-            const eplStats = item.statistics.find(stat => 
-                stat.league.name === 'Premier League' && 
-                stat.games.appearences !== null
-            );
-
-            if (eplStats) {
-                container.push({
-                    player: item.player,
-                    statistics: eplStats,
-                    transferValue: calculateTransferValue(item.player, eplStats)
-                });
+            const response = await axios.request(options);
+            if (response.data.response?.length) {
+                processPlayersData(response.data.response, tempContainer);
             }
         }
+        
+        processedPlayers = tempContainer.sort((a, b) => b.transferValue - a.transferValue);
+        complete = true;
+        gate0 = true;
+    } catch (err) {
+        console.error('Error:', err);
+    } finally {
+        loading = false;
     }
+}
+
 </script>
+
 
 <h4 class="page-link"><a href='/'>Home</a></h4>
 
