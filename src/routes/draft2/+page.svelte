@@ -17,7 +17,7 @@
         defenders: [],
         keepers: [],
         playerCount: 0,
-        transferBudget: 350
+        transferBudget: 250
     })
 
     let draft = $state({

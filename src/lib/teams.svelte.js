@@ -1,4 +1,3 @@
-
 export let teams = $state({
     team1: {
         name: '',
@@ -9,7 +8,7 @@ export let teams = $state({
         keepers: [],
         playerCount: 0,
         traits: [],
-        transferBudget: 350.00
+        transferBudget: 250.00
     },
     team2: {
         name: '',
@@ -20,7 +19,7 @@ export let teams = $state({
         keepers: [],
         playerCount: 0,
         traits: [],
-        transferBudget: 350.00
+        transferBudget: 250.00
     },
     team3: {
         name: '',
@@ -31,7 +30,7 @@ export let teams = $state({
         keepers: [],
         playerCount: 0,
         traits: [],
-        transferBudget: 350.00
+        transferBudget: 250.00
     },
     team4: {
         name: '',
@@ -42,7 +41,7 @@ export let teams = $state({
         keepers: [],
         playerCount: 0,
         traits: [],
-        transferBudget: 350.00
+        transferBudget: 250.00
     },
     team5: {
         name: '',
@@ -53,7 +52,7 @@ export let teams = $state({
         keepers: [],
         playerCount: 0,
         traits: [],
-        transferBudget: 350.00
+        transferBudget: 250.00
     },
     team6: {
         name: '',
@@ -64,7 +63,7 @@ export let teams = $state({
         keepers: [],
         playerCount: 0,
         traits: [],
-        transferBudget: 350.00
+        transferBudget: 250.00
     },
     team7: {
         name: '',
@@ -75,7 +74,7 @@ export let teams = $state({
         keepers: [],
         playerCount: 0,
         traits: [],
-        transferBudget: 350.00
+        transferBudget: 250.00
     },
     team8: {
         name: '',
@@ -86,7 +85,7 @@ export let teams = $state({
         keepers: [],
         playerCount: 0,
         traits: [],
-        transferBudget: 350.00
+        transferBudget: 250.00
     },
     team9: {
         name: '',
@@ -97,7 +96,7 @@ export let teams = $state({
         keepers: [],
         playerCount: 0,
         traits: [],
-        transferBudget: 350.00
+        transferBudget: 250.00
     },
     team10: {
         name: '',
@@ -108,7 +107,7 @@ export let teams = $state({
         keepers: [],
         playerCount: 0,
         traits: [],
-        transferBudget: 350.00
+        transferBudget: 250.00
     },
     team11: {
         name: '',
@@ -119,7 +118,7 @@ export let teams = $state({
         keepers: [],
         playerCount: 0,
         traits: [],
-        transferBudget: 350.00
+        transferBudget: 250.00
     },
     team12: {
         name: '',
@@ -130,7 +129,7 @@ export let teams = $state({
         keepers: [],
         playerCount: 0,
         traits: [],
-        transferBudget: 350.00
+        transferBudget: 250.00
     },
     team13: {
         name: '',
@@ -141,6 +140,6 @@ export let teams = $state({
         keepers: [],
         playerCount: 0,
         traits: [],
-        transferBudget: 350.00
+        transferBudget: 250.00
     }
-});
+ });
