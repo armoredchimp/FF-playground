@@ -7,7 +7,6 @@ const getTraitEffects = (traits = []) => ({
     passing: traits.includes('Strong Passing'),
     pressure: traits.includes('High Pressure'),
     wingPlay: traits.includes('Wing Play'),
-    starPower: traits.includes('Star Powered'),
     aggressive: traits.includes('Aggressive Tackling'),
     youth: traits.includes('Youth Focus'),
     experience: traits.includes('Favors Experience'),
@@ -46,16 +45,16 @@ export function getPositionalNeedScore(team, traits = []) {
         };
     }
     return {
-        'goalkeeper': positions.goalkeeper >= positionTargets.goalkeeper ? -10 :
-            positions.goalkeeper === 0 ? 8 : 
+        'goalkeeper': positions.goalkeeper >= positionTargets.goalkeeper ? -15 :
+            positions.goalkeeper === 0 ? 30 : 
             positions.goalkeeper === 1 ? 2 : 0,
-        'defender': positions.defender >= positionTargets.defender ? -10 :
+        'defender': positions.defender >= positionTargets.defender ? -15 :
             getTraitEffects(traits).defensive ? 
                 (positionTargets.defender - positions.defender) * 3 : 
                 (positionTargets.defender - positions.defender) * 2,
-        'midfielder': positions.midfielder >= positionTargets.midfielder ? -10 :
+        'midfielder': positions.midfielder >= positionTargets.midfielder ? -15 :
             (positionTargets.midfielder - positions.midfielder) * 2,
-        'attacker': positions.attacker >= positionTargets.attacker ? -10 :
+        'attacker': positions.attacker >= positionTargets.attacker ? -15 :
             getTraitEffects(traits).attacking ?
                 (positionTargets.attacker - positions.attacker) * 3 :
                 (positionTargets.attacker - positions.attacker) * 2
@@ -69,10 +68,10 @@ export function getValueBasedScore(index, player, traits = []) {
     
     // Base value score adjusted for star power
     score += index < 5 ? 
-        Math.floor(Math.random() * 3) + (getTraitEffects(traits).starPower ? 12 : 8) :
+        Math.floor(Math.random() * 3) +  8 :
         index < 10 ?
-            Math.floor(Math.random() * 4) + (getTraitEffects(traits).starPower ? 7 : 4) :
-            Math.floor(Math.random() * 3) + (getTraitEffects(traits).starPower ? 3 : 1);
+            Math.floor(Math.random() * 4) +  4 :
+            Math.floor(Math.random() * 3) +  1;
 
     // Defensive trait scoring
     if (getTraitEffects(traits).defensive && player.statistics?.tackles?.total) {
@@ -198,10 +197,8 @@ export function executePick(teamId, isPlayer, playerTeam, teams, processedPlayer
     const traits = team.traits || [];
     
     if (!isPlayer) {
-        // Adjust slice size for star power teams
-        const sliceSize = getTraitEffects(traits).starPower ?
-            Math.floor(Math.random() * 4) + 8 :   // 8-11 players for star focus
-            Math.floor(Math.random() * 7) + 12;   // 12-18 players normally
+        
+        const sliceSize = Math.floor(Math.random() * 12) + 14;  
             
         const affordablePlayers = processedPlayers.filter(p => p.transferValue <= team.transferBudget);
         

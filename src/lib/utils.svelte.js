@@ -13,6 +13,7 @@ export function calculateTransferValue(player, statistics) {
     if (gamesPlayed90 < 1) return 0.1;
 
     const isDefender = statistics.games?.position === 'Defender';
+    const isGoalkeeper = statistics.games?.position === 'Goalkeeper';
 
     // Stronger minutes-based scaling
     const minutesScaling = Math.min(1.5, Math.max(0.3, minutes / 2000));
@@ -30,12 +31,14 @@ export function calculateTransferValue(player, statistics) {
     const appearanceBonus = Math.min(1.0, (statistics.games?.appearences || 0) * 0.04);
     const minutesValue = (statistics.games?.minutes || 0) * 0.0004;
 
-    // Rating impact
+    // Rating impact with enhanced goalkeeper rating importance
     const rating = Number(statistics.games?.rating || 6.6);
     const ratingDiff = rating - 6.6;
-    const ratingMultiplier = isDefender ? 
-        (ratingDiff > 0 ? 1 + (ratingDiff * 0.5) : 1 + (ratingDiff * 0.6)) :
-        (ratingDiff > 0 ? 1 + (ratingDiff * 0.4) : 1 + (ratingDiff * 0.5));
+    const ratingMultiplier = isGoalkeeper ?
+        (ratingDiff > 0 ? 1 + (ratingDiff * 0.8) : 1 + (ratingDiff * 0.9)) :
+        isDefender ? 
+            (ratingDiff > 0 ? 1 + (ratingDiff * 0.5) : 1 + (ratingDiff * 0.6)) :
+            (ratingDiff > 0 ? 1 + (ratingDiff * 0.4) : 1 + (ratingDiff * 0.5));
 
     // Goal and assist values with efficiency bonus
     const goalsValue = ((statistics.goals?.total || 0) / gamesPlayed90) * 12.0;
@@ -78,8 +81,7 @@ export function calculateTransferValue(player, statistics) {
     
     // Increased key passes value
     const keyPassesP90 = ((statistics.passes?.key || 0) / gamesPlayed90);
-    const keyPassValue = keyPassesP90 * 0.8; // Doubled from 0.4
-    // Additional bonus for high volume of key passes
+    const keyPassValue = keyPassesP90 * 0.8;
     const keyPassBonus = statistics.passes?.key > 50 ? (statistics.passes.key - 50) * 0.1 : 0;
     
     // Defensive contributions
@@ -88,16 +90,19 @@ export function calculateTransferValue(player, statistics) {
     const interceptValue = ((statistics.tackles?.interceptions || 0) / gamesPlayed90) * 0.3 * defenderMultiplier;
     const blockValue = ((statistics.tackles?.blocks || 0) / gamesPlayed90) * 0.2 * defenderMultiplier;
     
-    // Goalkeeper specific
-    const savesValue = ((statistics.goals?.saves || 0) / gamesPlayed90) * 0.15;
-    const cleanSheetBonus = (statistics.goals?.conceded === 0 ? 1.5 : 0);
+    // Enhanced Goalkeeper specific stats
+    const savesValue = isGoalkeeper ? 
+        ((statistics.goals?.saves || 0) / gamesPlayed90) * 0.45 : // Tripled from 0.15
+        ((statistics.goals?.saves || 0) / gamesPlayed90) * 0.15;
+    const cleanSheetBonus = statistics.goals?.conceded === 0 ? 
+        (isGoalkeeper ? 4.5 : 1.5) : 0; // Tripled for goalkeepers
     
     // Duel success with defender bonus
     const duelValue = statistics.duels?.total ?
         ((statistics.duels.won || 0) / statistics.duels.total) * (isDefender ? 1.5 : 1.0) : 0;
     
-    // Discipline penalty
-    const disciplineMultiplier = isDefender ? 2.5 : 1.0;
+    // Discipline penalty (reduced for goalkeepers)
+    const disciplineMultiplier = isGoalkeeper ? 1.5 : (isDefender ? 2.5 : 1.0);
     const disciplineValue = (
         ((statistics.cards?.yellow || 0) / gamesPlayed90 * -0.4) +
         ((statistics.cards?.red || 0) / gamesPlayed90 * -2.5)
@@ -138,7 +143,6 @@ export function generateClubTraits() {
         'High Pressure',
         'Favors Attacking',
         'Wing Play',
-        'Star Powered',
         'Aggressive Tackling',
         'Youth Focus',
         'Favors Experience',
