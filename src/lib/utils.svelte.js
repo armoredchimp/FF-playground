@@ -145,32 +145,44 @@ export function generateClubTraits() {
         'Teamwork Focus',
         'Set Piece Specialists'
     ];
-
+    
     // For each team in teams object
     for (let i = 1; i <= 13; i++) {
         // Randomly decide how many traits (0-2)
         const numTraits = Math.floor(Math.random() * 3); // 0, 1, or 2
-        
+       
         // Create a copy of possible traits to draw from
         const availableTraits = [...possibleTraits];
         const selectedTraits = [];
-
+        
         // Select random traits
         for (let j = 0; j < numTraits; j++) {
             const randomIndex = Math.floor(Math.random() * availableTraits.length);
-            selectedTraits.push(availableTraits[randomIndex]);
+            const selectedTrait = availableTraits[randomIndex];
+            selectedTraits.push(selectedTrait);
+            
             // Remove selected trait to avoid duplicates within same team
             availableTraits.splice(randomIndex, 1);
-
-            if (availableTraits[randomIndex] === 'Favors Defense') {
+            
+            // Handle mutually exclusive traits
+            if (selectedTrait === 'Favors Defense') {
                 const attackIndex = availableTraits.indexOf('Favors Attacking');
                 if (attackIndex > -1) availableTraits.splice(attackIndex, 1);
-            } else if (availableTraits[randomIndex] === 'Favors Attacking') {
+            } 
+            else if (selectedTrait === 'Favors Attacking') {
                 const defenseIndex = availableTraits.indexOf('Favors Defense');
                 if (defenseIndex > -1) availableTraits.splice(defenseIndex, 1);
             }
+            else if (selectedTrait === 'Youth Focus') {
+                const experienceIndex = availableTraits.indexOf('Favors Experience');
+                if (experienceIndex > -1) availableTraits.splice(experienceIndex, 1);
+            }
+            else if (selectedTrait === 'Favors Experience') {
+                const youthIndex = availableTraits.indexOf('Youth Focus');
+                if (youthIndex > -1) availableTraits.splice(youthIndex, 1);
+            }
         }
-
+        
         // Assign traits to team
         teams[`team${i}`].traits = selectedTraits;
     }

@@ -29,7 +29,7 @@ let playerTeam = $state({
     defenders: [],
     keepers: [],
     playerCount: 0,
-    transferBudget: 250
+    transferBudget: 275
 });
 
 let draft = $state({
