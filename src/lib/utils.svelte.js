@@ -1,5 +1,5 @@
 
-import { teams } from "$lib/teams.svelte";
+import { teams } from "$lib/stores.svelte";
 import { firstParts, secondParts, commonNames } from "./clubNameData.svelte";
 
 export function calculateTransferValue(player, statistics) {

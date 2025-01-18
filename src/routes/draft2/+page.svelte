@@ -4,7 +4,7 @@
     import DraftTicker from "$lib/DraftTicker.svelte";
     import Team from "$lib/Team.svelte";
     import PlayerTeam from "$lib/PlayerTeam.svelte";
-    import { teams, playerTeam, draft, getDraftStage, getPlayersState, getDraftOrderState } from "$lib/teams.svelte";
+    import { teams, playerTeam, draft, getDraftStage, getPlayersState, getDraftOrderState } from "$lib/stores.svelte";
     import { 
         calculateTransferValue, 
         generateClubTraits, 
@@ -73,15 +73,15 @@
         playersState.setProcessedPlayers(result.processedPlayers);
         advanceDraft(draftState, draftOrderState.orderList, playerTeam);
     }
-}
-
-function handlePlayerPick(player, statistics, transferValue) {
-    const result = executePick('player', true, playerTeam, teams, playersState.processedPlayers, player, statistics, transferValue);
-    if (result) {
-        playersState.setProcessedPlayers(result.processedPlayers);
-        advanceDraft(draftState, draftOrderState.orderList, playerTeam);
     }
-}
+
+    function handlePlayerPick(player, statistics, transferValue) {
+        const result = executePick('player', true, playerTeam, teams, playersState.processedPlayers, player, statistics, transferValue);
+        if (result) {
+            playersState.setProcessedPlayers(result.processedPlayers);
+            advanceDraft(draftState, draftOrderState.orderList, playerTeam);
+        }
+    }
     
     function playerName() {
         const name = prompt("Please enter a name for your team:");

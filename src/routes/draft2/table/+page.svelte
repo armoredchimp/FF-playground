@@ -1,6 +1,6 @@
 <script>
     import Table from "$lib/Table.svelte";
-    import { teams, playerTeam } from "$lib/teams.svelte";
+    import { teams, playerTeam } from "$lib/stores.svelte";
     
 </script>
 
