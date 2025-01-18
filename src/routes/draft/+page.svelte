@@ -1,46 +1,46 @@
 <script>
     import axios from 'axios';
     import Player2 from '$lib/Player2.svelte';
-	import Player from '$lib/Player.svelte';
+	
 
     let playersPool = $state()
     let page = $state(1)
     let loading = $state(false)
 
-async function getPlayers(){
-    if (loading) return;
-    const options = {
-        method: 'GET',
-        url: 'https://api-football-v1.p.rapidapi.com/v3/players',
-        params: {
-            league: '39',
-            season: '2023',
-            page
-        },
-        headers: {
-            'x-rapidapi-key': import.meta.env.VITE_API_KEY,
-            'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
-        }
-    };
-
-    try {
-        const response = await axios.request(options);
-        console.log(response.data);
-        if (response.data.response?.length) {
-            const newPlayers = response.data.response.map(item=>({
-                player: { ...item.player },
-                statistics: [...item.statistics]
-            }))
-        playersPool = (playersPool || []).concat(newPlayers)
-        page++;
+    async function getPlayers(){
+        if (loading) return;
+        const options = {
+            method: 'GET',
+            url: 'https://api-football-v1.p.rapidapi.com/v3/players',
+            params: {
+                league: '39',
+                season: '2023',
+                page
+            },
+            headers: {
+                'x-rapidapi-key': import.meta.env.VITE_API_KEY,
+                'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
             }
-          
-    } catch (error) {
-        console.error(error);
-    } finally {
-        loading = false;
+        };
+
+        try {
+            const response = await axios.request(options);
+            console.log(response.data);
+            if (response.data.response?.length) {
+                const newPlayers = response.data.response.map(item=>({
+                    player: { ...item.player },
+                    statistics: [...item.statistics]
+                }))
+            playersPool = (playersPool || []).concat(newPlayers)
+            page++;
+                }
+            
+        } catch (error) {
+            console.error(error);
+        } finally {
+            loading = false;
+        }
     }
-}
 
 </script>
 

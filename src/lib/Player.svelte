@@ -1,5 +1,5 @@
 <script>
-    let {player = {
+    let { player = {
         id: 0,
         name: '',
         age: 0,

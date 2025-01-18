@@ -149,7 +149,8 @@
       </div>
     </div>
   </div>
-{/if} 
+
+  {/if} 
   <style>
     .player-card {
       border: 1px solid #ddd;
