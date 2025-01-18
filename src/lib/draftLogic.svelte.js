@@ -66,7 +66,6 @@ export function getValueBasedScore(index, player, traits = []) {
     const appearances = player.statistics?.games?.appearences || 1;
     let score = 0;
     
-    // Base value score adjusted for star power
     score += index < 5 ? 
         Math.floor(Math.random() * 3) +  8 :
         index < 10 ?

@@ -239,6 +239,16 @@ export let playerTeam = $state({
     goalsAgainst: 0
 });
 
+export let draftStageState = $state({
+    complete: false,
+    gate0: false,
+    gate1: false
+});
+
+export let draftOrderState = $state({
+    orderList: []
+})
+
 export let draft = $state({
     started: false,
     complete: false,
@@ -248,7 +258,49 @@ export let draft = $state({
     nextTeam: ''
 });
 
+export let playersState = $state({
+    processedPlayers: [],
+    loading: false,
+    progress: { current: 0, total: 0 }
+});
+
 export let processedPlayers = $state([]);
-export let gate0 = $state(false);
-export let gate1 = $state(false);
 export let draftOrderList = $state([]);
+export let loading = $state(false);
+export let progress = $state({ 
+    current: 0, 
+    total: 0 
+});
+
+export function getDraftStage() {
+    return {
+        get complete() { return draftStageState.complete; },
+        get gate0() { return draftStageState.gate0; },
+        get gate1() { return draftStageState.gate1; },
+        setComplete(value) { draftStageState.complete = value; },
+        setGate0(value) { draftStageState.gate0 = value; },
+        setGate1(value) { draftStageState.gate1 = value; }
+    };
+}
+
+export function getDraftOrderState(){
+    return {
+        get orderList(){
+            return draftOrderState.orderList;
+        },
+        setOrderList(list){
+            draftOrderState.orderList = list;
+        }
+    }
+}
+
+export function getPlayersState() {
+    return {
+        get processedPlayers() { return playersState.processedPlayers; },
+        get loading() { return playersState.loading; },
+        get progress() { return playersState.progress; },
+        setProcessedPlayers(players) { playersState.processedPlayers = players; },
+        setLoading(value) { playersState.loading = value; },
+        setProgress(value) { playersState.progress = value; }
+    };
+}
