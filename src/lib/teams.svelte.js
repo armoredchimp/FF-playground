@@ -8,7 +8,13 @@ export let teams = $state({
         keepers: [],
         playerCount: 0,
         traits: [],
-        transferBudget: 275.00
+        transferBudget: 275.00,
+        wins: 0,
+        draws: 0,
+        losses: 0,
+        points: 0,
+        goalsFor: 0,
+        goalsAgainst: 0
     },
     team2: {
         name: '',
@@ -19,7 +25,13 @@ export let teams = $state({
         keepers: [],
         playerCount: 0,
         traits: [],
-        transferBudget: 275.00
+        transferBudget: 275.00,
+        wins: 0,
+        draws: 0,
+        losses: 0,
+        points: 0,
+        goalsFor: 0,
+        goalsAgainst: 0
     },
     team3: {
         name: '',
@@ -30,7 +42,13 @@ export let teams = $state({
         keepers: [],
         playerCount: 0,
         traits: [],
-        transferBudget: 275.00
+        transferBudget: 275.00,
+        wins: 0,
+        draws: 0,
+        losses: 0,
+        points: 0,
+        goalsFor: 0,
+        goalsAgainst: 0
     },
     team4: {
         name: '',
@@ -41,7 +59,13 @@ export let teams = $state({
         keepers: [],
         playerCount: 0,
         traits: [],
-        transferBudget: 275.00
+        transferBudget: 275.00,
+        wins: 0,
+        draws: 0,
+        losses: 0,
+        points: 0,
+        goalsFor: 0,
+        goalsAgainst: 0
     },
     team5: {
         name: '',
@@ -52,7 +76,13 @@ export let teams = $state({
         keepers: [],
         playerCount: 0,
         traits: [],
-        transferBudget: 275.00
+        transferBudget: 275.00,
+        wins: 0,
+        draws: 0,
+        losses: 0,
+        points: 0,
+        goalsFor: 0,
+        goalsAgainst: 0
     },
     team6: {
         name: '',
@@ -63,7 +93,13 @@ export let teams = $state({
         keepers: [],
         playerCount: 0,
         traits: [],
-        transferBudget: 275.00
+        transferBudget: 275.00,
+        wins: 0,
+        draws: 0,
+        losses: 0,
+        points: 0,
+        goalsFor: 0,
+        goalsAgainst: 0
     },
     team7: {
         name: '',
@@ -74,7 +110,13 @@ export let teams = $state({
         keepers: [],
         playerCount: 0,
         traits: [],
-        transferBudget: 275.00
+        transferBudget: 275.00,
+        wins: 0,
+        draws: 0,
+        losses: 0,
+        points: 0,
+        goalsFor: 0,
+        goalsAgainst: 0
     },
     team8: {
         name: '',
@@ -85,7 +127,13 @@ export let teams = $state({
         keepers: [],
         playerCount: 0,
         traits: [],
-        transferBudget: 275.00
+        transferBudget: 275.00,
+        wins: 0,
+        draws: 0,
+        losses: 0,
+        points: 0,
+        goalsFor: 0,
+        goalsAgainst: 0
     },
     team9: {
         name: '',
@@ -96,7 +144,13 @@ export let teams = $state({
         keepers: [],
         playerCount: 0,
         traits: [],
-        transferBudget: 275.00
+        transferBudget: 275.00,
+        wins: 0,
+        draws: 0,
+        losses: 0,
+        points: 0,
+        goalsFor: 0,
+        goalsAgainst: 0
     },
     team10: {
         name: '',
@@ -107,7 +161,13 @@ export let teams = $state({
         keepers: [],
         playerCount: 0,
         traits: [],
-        transferBudget: 275.00
+        transferBudget: 275.00,
+        wins: 0,
+        draws: 0,
+        losses: 0,
+        points: 0,
+        goalsFor: 0,
+        goalsAgainst: 0
     },
     team11: {
         name: '',
@@ -118,7 +178,13 @@ export let teams = $state({
         keepers: [],
         playerCount: 0,
         traits: [],
-        transferBudget: 275.00
+        transferBudget: 275.00,
+        wins: 0,
+        draws: 0,
+        losses: 0,
+        points: 0,
+        goalsFor: 0,
+        goalsAgainst: 0
     },
     team12: {
         name: '',
@@ -129,7 +195,13 @@ export let teams = $state({
         keepers: [],
         playerCount: 0,
         traits: [],
-        transferBudget: 275.00
+        transferBudget: 275.00,
+        wins: 0,
+        draws: 0,
+        losses: 0,
+        points: 0,
+        goalsFor: 0,
+        goalsAgainst: 0
     },
     team13: {
         name: '',
@@ -140,6 +212,43 @@ export let teams = $state({
         keepers: [],
         playerCount: 0,
         traits: [],
-        transferBudget: 275.00
+        transferBudget: 275.00,
+        wins: 0,
+        draws: 0,
+        losses: 0,
+        points: 0,
+        goalsFor: 0,
+        goalsAgainst: 0
     }
 });
+
+export let playerTeam = $state({
+    name: '',
+    draftOrder: 0,
+    attackers: [],
+    midfielders: [],
+    defenders: [],
+    keepers: [],
+    playerCount: 0,
+    transferBudget: 275,
+    wins: 0,
+    draws: 0,
+    losses: 0,
+    points: 0,
+    goalsFor: 0,
+    goalsAgainst: 0
+});
+
+export let draft = $state({
+    started: false,
+    complete: false,
+    currentRound: 1,
+    currentPick: 1,
+    currentTeam: '',
+    nextTeam: ''
+});
+
+export let processedPlayers = $state([]);
+export let gate0 = $state(false);
+export let gate1 = $state(false);
+export let draftOrderList = $state([]);

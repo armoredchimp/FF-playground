@@ -39,6 +39,7 @@ async function test(){
     <button class="button" onclick={test}>Click</button>
     <h4 class="page-link"><a href='/draft'>Draft Page</a></h4>
     <h4 class="page-link"><a href='/draft2'>Draft Page 2</a></h4>
+    <h4 class="page-link"><a href='/draft3'>Draft Page 3</a></h4>
 </div>
 {#if teamInfo}
     <h1>{teamInfo.name}</h1>
@@ -81,35 +82,35 @@ async function test(){
 
 
 <style>
-.container {
-    display: flex;
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 1rem;
-}
+    .container {
+        display: flex;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 1rem;
+    }
 
-.button {
-    margin-left: 1rem;
-}
+    .button {
+        margin-left: 1rem;
+    }
 
-.page-link {
-    margin-left: 4rem;
-}
-.team-info {
-display: flex;
-align-items: center;
-gap: 1rem;
-margin: 2rem 0;
-}
+    .page-link {
+        margin-left: 4rem;
+    }
+    .team-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin: 2rem 0;
+    }
 
-.position-group {
-margin: 2rem 0;
-}
+    .position-group {
+        margin: 2rem 0;
+    }
 
-h4 {
-color: #666;
-border-bottom: 1px solid #ddd;
-padding-bottom: 0.5rem;
-margin-bottom: 1rem;
-}
+    h4 {
+        color: #666;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 0.5rem;
+        margin-bottom: 1rem;
+    }
 </style>
