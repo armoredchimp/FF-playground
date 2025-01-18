@@ -108,7 +108,7 @@ export function calculateTransferValue(player, statistics) {
         ((statistics.cards?.red || 0) / gamesPlayed90 * -2.5)
     ) * disciplineMultiplier;
 
-    // Sum all contributions before minutes scaling
+    
     const rawValue = (baseValue +
         appearanceBonus +
         minutesValue +
@@ -129,14 +129,13 @@ export function calculateTransferValue(player, statistics) {
         duelValue +
         disciplineValue);
 
-    // Apply minutes scaling before other multipliers
+    
     const scaledValue = rawValue * minutesScaling;
     const totalValue = scaledValue * ageFactor * ratingMultiplier;
     return Math.max(totalValue, 0.1);
 }
 
 export function generateClubTraits() {
-    // Define possible traits
     const possibleTraits = [
         'Favors Defense',
         'Strong Passing',
@@ -192,32 +191,42 @@ export function generateClubTraits() {
     }
 }
 
-export function generateClubName(firstNameCounts, usedSecondNames) {
-    const availableFirsts = firstParts.filter(name => 
-        !firstNameCounts[name] || firstNameCounts[name] < 2
+export function generateClubName(firstNameCounts, usedSecondNames, singleNameSet = new Set()) {
+    // First determine if this will be a single or double name (80% chance for double)
+    const willBeDoubleName = Math.random() < 0.8;
+    
+    const availableFirsts = firstParts.filter(name =>
+        (!firstNameCounts[name] || firstNameCounts[name] < 2) && 
+        // If it's a double name, we can't use any name that's in the single name set
+        // If it's a single name, we can't use any name that's been used in combinations
+        (willBeDoubleName ? !singleNameSet.has(name) : firstNameCounts[name] === undefined)
     );
+   
+    if (availableFirsts.length === 0) return null; 
     
     const firstName = availableFirsts[Math.floor(Math.random() * availableFirsts.length)];
     firstNameCounts[firstName] = (firstNameCounts[firstName] || 0) + 1;
 
-    if (Math.random() < 0.8) {
-        const unusedNonCommon = secondParts.filter(name => 
+    if (willBeDoubleName) {
+        const unusedNonCommon = secondParts.filter(name =>
             !commonNames.includes(name) && !usedSecondNames.has(name)
         );
-        
+       
         const selectionPool = [...unusedNonCommon, ...commonNames, ...commonNames];
-        
+       
         if (selectionPool.length > 0) {
             const secondName = selectionPool[Math.floor(Math.random() * selectionPool.length)];
-            
+           
             if (!commonNames.includes(secondName)) {
                 usedSecondNames.add(secondName);
             }
-            
+           
             return `${firstName} ${secondName}`;
         }
     }
-    
+   
+    // If we get here, this will be a single name
+    singleNameSet.add(firstName);
     return firstName;
 }
 
