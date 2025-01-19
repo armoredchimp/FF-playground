@@ -6,6 +6,7 @@
 <div class="top-bar">
     <button class="page-link"><a href='/draft2'>Draft</a></button>
     <button class="page-link"><a href='/draft2/table'>League Table</a></button>
+    <button class="page-link"><a href='/draft2/teams/test'>Test</a></button>
 </div>
 
 <style>

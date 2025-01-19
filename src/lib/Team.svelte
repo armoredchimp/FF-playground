@@ -17,6 +17,13 @@
     function expanded() {
         isExpanded = !isExpanded;
     }
+
+    function handleViewTeamClick(e) {
+        e.stopPropagation();
+        // const slug = team.name.toLowerCase().replace(/\s+/g, '-');
+        // console.log('Navigating to:', `/teams/${slug}`);
+        // console.log('Team data:', team);
+    }
 </script>
 
 <button
@@ -28,11 +35,20 @@
     aria-expanded={isExpanded}
     aria-label={`Team card for ${team.name}`}
 >
-    <div class="team-header">
+<div class="team-header">
+    <div class="flex justify-between items-center">
         <h3>{team.name}</h3>
-        <h4>Draft Position: {team.draftOrder}</h4>
-        <h4>Transfer Budget: £{team.transferBudget.toFixed(2)}M</h4>
+            <a 
+            href="draft2/teams/{team.name.toLowerCase()}"
+            class="view-team-btn"
+            onclick={handleViewTeamClick}
+        >
+            View Team
+            </a>
     </div>
+    <h4>Draft Position: {team.draftOrder}</h4>
+    <h4>Transfer Budget: £{team.transferBudget.toFixed(2)}M</h4>
+</div>
     {#if isExpanded}
         <div class="expanded-content">
             <div class="stat-row">
@@ -114,6 +130,33 @@
 </button>
 
 <style>
+     .view-team-btn {
+        font-size: 0.8rem;
+        padding: 0.25rem 0.75rem;
+        background-color: #3b82f6;
+        color: white;
+        border-radius: 4px;
+        text-decoration: none;
+        transition: background-color 0.2s;
+    }
+
+    .view-team-btn:hover {
+        background-color: #2563eb;
+    }
+
+    /* Add this to ensure proper layout */
+    .flex {
+        display: flex;
+    }
+
+    .justify-between {
+        justify-content: space-between;
+    }
+
+    .items-center {
+        align-items: center;
+    }
+    
     .team-card {
         width: 300px;
         text-align: left;
