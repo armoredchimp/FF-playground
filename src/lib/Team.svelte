@@ -19,9 +19,7 @@
     }
 
     function handleViewTeamClick(e) {
-        
         return e
-        
     }
 </script>
 
@@ -34,20 +32,11 @@
     aria-expanded={isExpanded}
     aria-label={`Team card for ${team.name}`}
 >
-<div class="team-header">
-    <div class="flex justify-between items-center">
+    <div class="team-header">
         <h3>{team.name}</h3>
-            <a 
-            href="draft2/teams/{team.name.toLowerCase()}"
-            class="view-team-btn"
-            onclick={handleViewTeamClick}
-        >
-            View Team
-            </a>
+        <h4>Draft Position: {team.draftOrder}</h4>
+        <h4>Transfer Budget: £{team.transferBudget.toFixed(2)}M</h4>
     </div>
-    <h4>Draft Position: {team.draftOrder}</h4>
-    <h4>Transfer Budget: £{team.transferBudget.toFixed(2)}M</h4>
-</div>
     {#if isExpanded}
         <div class="expanded-content">
             <div class="stat-row">
@@ -124,15 +113,30 @@
                     {/if}
                 </span>
             </div>
+            <div class="view-team-container">
+                <a 
+                    href="draft2/teams/{team.name.toLowerCase()}"
+                    class="view-team-btn"
+                    onclick={handleViewTeamClick}
+                >
+                    View Team
+                </a>
+            </div>
         </div>
     {/if}
 </button>
 
 <style>
-     .view-team-btn {
-        font-size: 0.8rem;
-        padding: 0.25rem 0.75rem;
-        background-color: #3b82f6;
+    .view-team-container {
+        margin-top: 1rem;
+        text-align: center;
+    }
+
+    .view-team-btn {
+        display: inline-block;
+        font-size: 0.875rem;
+        padding: 0.5rem 1rem;
+        background-color: #64748b;
         color: white;
         border-radius: 4px;
         text-decoration: none;
@@ -140,20 +144,7 @@
     }
 
     .view-team-btn:hover {
-        background-color: #2563eb;
-    }
-
-    /* Add this to ensure proper layout */
-    .flex {
-        display: flex;
-    }
-
-    .justify-between {
-        justify-content: space-between;
-    }
-
-    .items-center {
-        align-items: center;
+        background-color: #475569;
     }
     
     .team-card {
@@ -166,7 +157,6 @@
         margin-bottom: 0.5rem;
         cursor: pointer;
         transition: all 0.2s ease;
-        /* Reset button styles */
         appearance: none;
         -webkit-appearance: none;
         font: inherit;
