@@ -15,9 +15,5 @@
 </script>
 
 
-<h1>{data}</h1>
-<h2>{draftStage.gate0}</h2>
-<!-- svelte-ignore a11y_consider_explicit_label -->
- <h2>{data.team}</h2>
-<button onclick={test}>Click here</button>
+
 <TeamPlayerList team={data.team}/>

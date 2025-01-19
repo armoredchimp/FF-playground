@@ -7,7 +7,6 @@
 </script>
 
 <div class="top-bar">
-    <h1>{draftStageState.gate0}</h1>
     <button class="page-link"><a href='/draft2'>Draft</a></button>
     <button class="page-link"><a href='/draft2/table'>League Table</a></button>
     <button class="page-link"><a href='/draft2/teams/test'>Test</a></button>

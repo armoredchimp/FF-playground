@@ -19,10 +19,9 @@
     }
 
     function handleViewTeamClick(e) {
-        // e.stopPropagation();
-        // const slug = team.name.toLowerCase().replace(/\s+/g, '-');
         
-        console.log('Team data:', team);
+        return e
+        
     }
 </script>
 
