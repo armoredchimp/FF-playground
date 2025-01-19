@@ -19,10 +19,10 @@
     }
 
     function handleViewTeamClick(e) {
-        e.stopPropagation();
+        // e.stopPropagation();
         // const slug = team.name.toLowerCase().replace(/\s+/g, '-');
-        // console.log('Navigating to:', `/teams/${slug}`);
-        // console.log('Team data:', team);
+        
+        console.log('Team data:', team);
     }
 </script>
 
