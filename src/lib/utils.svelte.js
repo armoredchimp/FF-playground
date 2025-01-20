@@ -1,6 +1,7 @@
+let singleNameFirsts = new Map();  // Track count of first names used alone
+let doubleNameFirsts = new Map();  // Track count of first names used in combinations
+let usedSecondParts = new Set();
 
-import { teams } from "$lib/stores.svelte";
-import { firstParts, secondParts, commonNames } from "./clubNameData.svelte";
 
 export function calculateTransferValue(player, statistics) {
     let baseValue = 2.0;
@@ -149,85 +150,82 @@ export function generateClubTraits() {
         'Set Piece Specialists'
     ];
     
-    // For each team in teams object
-    for (let i = 1; i <= 13; i++) {
-        // Randomly decide how many traits (0-2)
-        const numTraits = Math.floor(Math.random() * 3); // 0, 1, or 2
-       
-        // Create a copy of possible traits to draw from
-        const availableTraits = [...possibleTraits];
-        const selectedTraits = [];
+    // Randomly decide how many traits (0-2)
+    const numTraits = Math.floor(Math.random() * 3);
+    
+    // Create a copy of possible traits to draw from
+    const availableTraits = [...possibleTraits];
+    const selectedTraits = [];
+    
+    // Select random traits
+    for (let j = 0; j < numTraits; j++) {
+        const randomIndex = Math.floor(Math.random() * availableTraits.length);
+        const selectedTrait = availableTraits[randomIndex];
+        selectedTraits.push(selectedTrait);
         
-        // Select random traits
-        for (let j = 0; j < numTraits; j++) {
-            const randomIndex = Math.floor(Math.random() * availableTraits.length);
-            const selectedTrait = availableTraits[randomIndex];
-            selectedTraits.push(selectedTrait);
-            
-            // Remove selected trait to avoid duplicates within same team
-            availableTraits.splice(randomIndex, 1);
-            
-            // Handle mutually exclusive traits
-            if (selectedTrait === 'Favors Defense') {
-                const attackIndex = availableTraits.indexOf('Favors Attacking');
-                if (attackIndex > -1) availableTraits.splice(attackIndex, 1);
-            } 
-            else if (selectedTrait === 'Favors Attacking') {
-                const defenseIndex = availableTraits.indexOf('Favors Defense');
-                if (defenseIndex > -1) availableTraits.splice(defenseIndex, 1);
-            }
-            else if (selectedTrait === 'Youth Focus') {
-                const experienceIndex = availableTraits.indexOf('Favors Experience');
-                if (experienceIndex > -1) availableTraits.splice(experienceIndex, 1);
-            }
-            else if (selectedTrait === 'Favors Experience') {
-                const youthIndex = availableTraits.indexOf('Youth Focus');
-                if (youthIndex > -1) availableTraits.splice(youthIndex, 1);
-            }
+        // Remove selected trait to avoid duplicates
+        availableTraits.splice(randomIndex, 1);
+        
+        // Handle mutually exclusive traits
+        if (selectedTrait === 'Favors Defense') {
+            const attackIndex = availableTraits.indexOf('Favors Attacking');
+            if (attackIndex > -1) availableTraits.splice(attackIndex, 1);
         }
-        
-        // Assign traits to team
-        teams[`team${i}`].traits = selectedTraits;
+        else if (selectedTrait === 'Favors Attacking') {
+            const defenseIndex = availableTraits.indexOf('Favors Defense');
+            if (defenseIndex > -1) availableTraits.splice(defenseIndex, 1);
+        }
+        else if (selectedTrait === 'Youth Focus') {
+            const experienceIndex = availableTraits.indexOf('Favors Experience');
+            if (experienceIndex > -1) availableTraits.splice(experienceIndex, 1);
+        }
+        else if (selectedTrait === 'Favors Experience') {
+            const youthIndex = availableTraits.indexOf('Youth Focus');
+            if (youthIndex > -1) availableTraits.splice(youthIndex, 1);
+        }
     }
+
+    return selectedTraits;
 }
 
-export function generateClubName(firstNameCounts, usedSecondNames, singleNameSet = new Set()) {
-    // First determine if this will be a single or double name (80% chance for double)
-    const willBeDoubleName = Math.random() < 0.8;
+export function generateClubName(firstParts, commonNames, secondParts) {
+    const isDoubleName = Math.random() < 0.8; // 4/5 chance for double name
     
-    const availableFirsts = firstParts.filter(name =>
-        (!firstNameCounts[name] || firstNameCounts[name] < 2) && 
-        // If it's a double name, we can't use any name that's in the single name set
-        // If it's a single name, we can't use any name that's been used in combinations
-        (willBeDoubleName ? !singleNameSet.has(name) : firstNameCounts[name] === undefined)
-    );
-   
-    if (availableFirsts.length === 0) return null; 
-    
-    const firstName = availableFirsts[Math.floor(Math.random() * availableFirsts.length)];
-    firstNameCounts[firstName] = (firstNameCounts[firstName] || 0) + 1;
-
-    if (willBeDoubleName) {
-        const unusedNonCommon = secondParts.filter(name =>
-            !commonNames.includes(name) && !usedSecondNames.has(name)
+    if (isDoubleName) {
+        // Get available first parts (not used alone and used <2 times in combinations)
+        const availableFirsts = firstParts.filter(name => 
+            !singleNameFirsts.has(name) && 
+            (doubleNameFirsts.get(name) || 0) < 2
         );
-       
-        const selectionPool = [...unusedNonCommon, ...commonNames, ...commonNames];
-       
-        if (selectionPool.length > 0) {
-            const secondName = selectionPool[Math.floor(Math.random() * selectionPool.length)];
-           
-            if (!commonNames.includes(secondName)) {
-                usedSecondNames.add(secondName);
-            }
-           
-            return `${firstName} ${secondName}`;
+        
+        const firstPart = availableFirsts[Math.floor(Math.random() * availableFirsts.length)];
+        doubleNameFirsts.set(firstPart, (doubleNameFirsts.get(firstPart) || 0) + 1);
+        
+        // For second part, either use common name or unused second part
+        let secondPart;
+        // 0.4 chance for common name
+        if (Math.random() < 0.4) {
+            secondPart = commonNames[Math.floor(Math.random() * commonNames.length)];
+        } else {
+            const availableSeconds = secondParts.filter(name => !usedSecondParts.has(name));
+            secondPart = availableSeconds[Math.floor(Math.random() * availableSeconds.length)];
+            usedSecondParts.add(secondPart);
         }
+        
+        return `${firstPart} ${secondPart}`;
+        
+    } else {
+        // Get available first parts (not used in combinations and used <2 times alone)
+        const availableFirsts = firstParts.filter(name => 
+            !doubleNameFirsts.has(name) && 
+            (singleNameFirsts.get(name) || 0) < 2
+        );
+        
+        const firstPart = availableFirsts[Math.floor(Math.random() * availableFirsts.length)];
+        singleNameFirsts.set(firstPart, (singleNameFirsts.get(firstPart) || 0) + 1);
+        
+        return firstPart;
     }
-   
-    // If we get here, this will be a single name
-    singleNameSet.add(firstName);
-    return firstName;
 }
 
 export function assignDraftOrder(numberPool) {

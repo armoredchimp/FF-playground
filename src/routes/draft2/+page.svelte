@@ -4,6 +4,7 @@
     import DraftTicker from "$lib/DraftTicker.svelte";
     import Team from "$lib/Team.svelte";
     import PlayerTeam from "$lib/PlayerTeam.svelte";
+    import { firstParts, secondParts, commonNames } from "$lib/clubNameData.svelte";
     import { teams, playerTeam, draft, getDraftStage, getPlayersState, getDraftOrderState } from "$lib/stores.svelte";
     import { 
         calculateTransferValue, 
@@ -35,8 +36,7 @@
     let popupTimer;
     
     let numberPool = Array.from({length:14}, (_,i) => i+1);
-    const firstNameCounts = {};
-    const usedSecondNames = new Set();
+    
     
     function showPopup() {
         clearTimeout(popupTimer);
@@ -92,11 +92,10 @@
     }
     
     function createTeams() {
-        Object.keys(firstNameCounts).forEach(key => delete firstNameCounts[key]);
-        usedSecondNames.clear();
         
         for(let i = 1; i <= 13; i++) {
-            teams[`team${i}`].name = generateClubName(firstNameCounts, usedSecondNames);
+            teams[`team${i}`].name = generateClubName(firstParts, commonNames, secondParts);
+            teams[`team${i}`].traits = generateClubTraits();
             teams[`team${i}`].draftOrder = assignDraftOrder(numberPool);
         }
         playerTeam.draftOrder = assignDraftOrder(numberPool);

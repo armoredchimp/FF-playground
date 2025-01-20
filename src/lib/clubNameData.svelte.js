@@ -75,17 +75,14 @@ export let firstParts = [
     "Wickleton"
 ];
 
-export let commonNames = ["United", "United F.C.", "Town", "City"];
+export let commonNames = ["United", "United F.C.", "County", "County F.C.", "Town", "City", "Town F.C.",
+    "City F.C.",];
 
 export let secondParts = [
-    "Town F.C.",
-    "City F.C.",
     "Athletic",
     "Rovers",
     "Wanderers",
     "Albion",
-    "County",
-    "County F.C.",
     "Grove F.C.",
     "Forest",
     "Rangers",
