@@ -46,7 +46,7 @@
             <div class="position-group">
                 <span class="label">Attackers:</span>
                 <div class="player-images">
-                    {#each team.attackers as player}
+                    {#each team.attackers as [player, statistics]}
                         <div class="player-image-container">
                             <img src={player.photo} alt={player.name} class="player-photo" />
                             <div class="player-popup">
@@ -61,7 +61,7 @@
             <div class="position-group">
                 <span class="label">Midfielders:</span>
                 <div class="player-images">
-                    {#each team.midfielders as player}
+                    {#each team.midfielders as [player, statistics]}
                         <div class="player-image-container">
                             <img src={player.photo} alt={player.name} class="player-photo" />
                             <div class="player-popup">
@@ -76,7 +76,7 @@
             <div class="position-group">
                 <span class="label">Defenders:</span>
                 <div class="player-images">
-                    {#each team.defenders as player}
+                    {#each team.defenders as [player, statistics]}
                         <div class="player-image-container">
                             <img src={player.photo} alt={player.name} class="player-photo" />
                             <div class="player-popup">
@@ -91,7 +91,7 @@
             <div class="position-group">
                 <span class="label">Keepers:</span>
                 <div class="player-images">
-                    {#each team.keepers as player}
+                    {#each team.keepers as [player, statistics]}
                         <div class="player-image-container">
                             <img src={player.photo} alt={player.name} class="player-photo" />
                             <div class="player-popup">

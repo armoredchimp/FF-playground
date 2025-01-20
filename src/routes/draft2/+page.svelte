@@ -4,7 +4,7 @@
     import DraftTicker from "$lib/DraftTicker.svelte";
     import Team from "$lib/Team.svelte";
     import PlayerTeam from "$lib/PlayerTeam.svelte";
-    import { teams, playerTeam, draft, getDraftStage, getPlayersState, getDraftOrderState, getAllPlayers } from "$lib/stores.svelte";
+    import { teams, playerTeam, draft, getDraftStage, getPlayersState, getDraftOrderState } from "$lib/stores.svelte";
     import { 
         calculateTransferValue, 
         generateClubTraits, 
@@ -152,7 +152,7 @@
         const sortedPlayers = tempContainer.sort((a, b) => b.transferValue - a.transferValue);
         
         
-        getAllPlayers().setPlayers(sortedPlayers);
+        
         
         // Set the processedPlayers as before for the draft
         playersState.setProcessedPlayers(sortedPlayers);

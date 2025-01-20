@@ -1,5 +1,5 @@
 <script>
-    import { getAllPlayers } from "./stores.svelte";
+    // Remove the getAllPlayers import since we won't need it anymore
     
     let {
         team = {
@@ -44,14 +44,13 @@
             <section>
                 <h3 class="font-medium mb-2 text-lg">Goalkeepers</h3>
                 <div class="space-y-2">
-                    {#each team.keepers as keeper (keeper.id)}
-                        {@const playerDetails = getAllPlayers().getPlayerById(keeper.id)}
+                    {#each team.keepers as [player, statistics] (player.id)}
                         <div class="flex items-center p-3 rounded-lg {getBackgroundColor('Goalkeeper')} hover:shadow-md transition-shadow group relative">
                             <div class="w-12 h-12 rounded-full overflow-hidden mr-4 bg-gray-200">
-                                {#if playerDetails?.player.photo}
+                                {#if player.photo}
                                     <img 
-                                        src={playerDetails.player.photo} 
-                                        alt={playerDetails.player.name || `${playerDetails.player.firstname} ${playerDetails.player.lastname}`}
+                                        src={player.photo} 
+                                        alt={player.name || `${player.firstname} ${player.lastname}`}
                                         class="w-full h-full object-cover"
                                     />
                                 {:else}
@@ -62,25 +61,21 @@
                             </div>
                             <div class="flex-1">
                                 <h3 class="font-medium">
-                                    {playerDetails ? (playerDetails.player.name || `${playerDetails.player.firstname} ${playerDetails.player.lastname}`) : 'Loading...'}
+                                    {player.name || `${player.firstname} ${player.lastname}`}
                                 </h3>
                                 <p class="text-sm text-gray-600">
-                                    {playerDetails ? `${playerDetails.player.age} yrs • ${playerDetails.player.nationality}` : 'Loading...'}
+                                    {player.age} yrs • {player.nationality}
                                 </p>
                             </div>
                             
                             <!-- Hover Stats -->
                             <div class="absolute hidden group-hover:block bg-white border border-gray-200 rounded-lg shadow-lg p-4 z-10 left-full ml-2 top-0 w-64">
-                                {#if playerDetails}
-                                    <div class="text-sm space-y-2">
-                                        <p>Nationality: {playerDetails.player.nationality}</p>
-                                        <p>Appearances: {playerDetails.statistics?.games?.appearences ?? 'N/A'}</p>
-                                        <p>Minutes Played: {playerDetails.statistics?.games?.minutes ?? 'N/A'}</p>
-                                        <p>Rating: {Number(playerDetails.statistics?.games?.rating || 0).toFixed(1)}</p>
-                                    </div>
-                                {:else}
-                                    <div class="text-sm">Loading player details...</div>
-                                {/if}
+                                <div class="text-sm space-y-2">
+                                    <p>Nationality: {player.nationality}</p>
+                                    <p>Appearances: {statistics?.games?.appearences ?? 'N/A'}</p>
+                                    <p>Minutes Played: {statistics?.games?.minutes ?? 'N/A'}</p>
+                                    <p>Rating: {Number(statistics?.games?.rating || 0).toFixed(1)}</p>
+                                </div>
                             </div>
                         </div>
                     {/each}
@@ -92,14 +87,13 @@
             <section>
                 <h3 class="font-medium mb-2 text-lg">Defenders</h3>
                 <div class="space-y-2">
-                    {#each team.defenders as defender (defender.id)}
-                        {@const playerDetails = getAllPlayers().getPlayerById(defender.id)}
+                    {#each team.defenders as [player, statistics] (player.id)}
                         <div class="flex items-center p-3 rounded-lg {getBackgroundColor('Defender')} hover:shadow-md transition-shadow group relative">
                             <div class="w-12 h-12 rounded-full overflow-hidden mr-4 bg-gray-200">
-                                {#if playerDetails?.player.photo}
+                                {#if player.photo}
                                     <img 
-                                        src={playerDetails.player.photo} 
-                                        alt={playerDetails.player.name || `${playerDetails.player.firstname} ${playerDetails.player.lastname}`}
+                                        src={player.photo} 
+                                        alt={player.name || `${player.firstname} ${player.lastname}`}
                                         class="w-full h-full object-cover"
                                     />
                                 {:else}
@@ -110,29 +104,25 @@
                             </div>
                             <div class="flex-1">
                                 <h3 class="font-medium">
-                                    {playerDetails ? (playerDetails.player.name || `${playerDetails.player.firstname} ${playerDetails.player.lastname}`) : 'Loading...'}
+                                    {player.name || `${player.firstname} ${player.lastname}`}
                                 </h3>
                                 <p class="text-sm text-gray-600">
-                                    {playerDetails ? `${playerDetails.player.age} yrs • ${playerDetails.player.nationality}` : 'Loading...'}
+                                    {player.age} yrs • {player.nationality}
                                 </p>
                             </div>
                             
                             <!-- Hover Stats -->
                             <div class="absolute hidden group-hover:block bg-white border border-gray-200 rounded-lg shadow-lg p-4 z-10 left-full ml-2 top-0 w-64">
-                                {#if playerDetails}
-                                    <div class="text-sm space-y-2">
-                                        <p>Nationality: {playerDetails.player.nationality}</p>
-                                        <p>Appearances: {playerDetails.statistics?.games?.appearences ?? 'N/A'}</p>
-                                        <p>Minutes Played: {playerDetails.statistics?.games?.minutes ?? 'N/A'}</p>
-                                        <p>Rating: {Number(playerDetails.statistics?.games?.rating || 0).toFixed(1)}</p>
-                                        <p>Yellow Cards: {playerDetails.statistics?.cards?.yellow ?? 'N/A'}</p>
-                                        <p>Red Cards: {playerDetails.statistics?.cards?.red ?? 'N/A'}</p>
-                                        <p>Tackles: {playerDetails.statistics?.tackles?.total ?? 'N/A'}</p>
-                                        <p>Interceptions: {playerDetails.statistics?.tackles?.interceptions ?? 'N/A'}</p>
-                                    </div>
-                                {:else}
-                                    <div class="text-sm">Loading player details...</div>
-                                {/if}
+                                <div class="text-sm space-y-2">
+                                    <p>Nationality: {player.nationality}</p>
+                                    <p>Appearances: {statistics?.games?.appearences ?? 'N/A'}</p>
+                                    <p>Minutes Played: {statistics?.games?.minutes ?? 'N/A'}</p>
+                                    <p>Rating: {Number(statistics?.games?.rating || 0).toFixed(1)}</p>
+                                    <p>Yellow Cards: {statistics?.cards?.yellow ?? 'N/A'}</p>
+                                    <p>Red Cards: {statistics?.cards?.red ?? 'N/A'}</p>
+                                    <p>Tackles: {statistics?.tackles?.total ?? 'N/A'}</p>
+                                    <p>Interceptions: {statistics?.tackles?.interceptions ?? 'N/A'}</p>
+                                </div>
                             </div>
                         </div>
                     {/each}
@@ -144,14 +134,13 @@
             <section>
                 <h3 class="font-medium mb-2 text-lg">Midfielders</h3>
                 <div class="space-y-2">
-                    {#each team.midfielders as midfielder (midfielder.id)}
-                        {@const playerDetails = getAllPlayers().getPlayerById(midfielder.id)}
+                    {#each team.midfielders as [player, statistics] (player.id)}
                         <div class="flex items-center p-3 rounded-lg {getBackgroundColor('Midfielder')} hover:shadow-md transition-shadow group relative">
                             <div class="w-12 h-12 rounded-full overflow-hidden mr-4 bg-gray-200">
-                                {#if playerDetails?.player.photo}
+                                {#if player.photo}
                                     <img 
-                                        src={playerDetails.player.photo} 
-                                        alt={playerDetails.player.name || `${playerDetails.player.firstname} ${playerDetails.player.lastname}`}
+                                        src={player.photo} 
+                                        alt={player.name || `${player.firstname} ${player.lastname}`}
                                         class="w-full h-full object-cover"
                                     />
                                 {:else}
@@ -162,29 +151,25 @@
                             </div>
                             <div class="flex-1">
                                 <h3 class="font-medium">
-                                    {playerDetails ? (playerDetails.player.name || `${playerDetails.player.firstname} ${playerDetails.player.lastname}`) : 'Loading...'}
+                                    {player.name || `${player.firstname} ${player.lastname}`}
                                 </h3>
                                 <p class="text-sm text-gray-600">
-                                    {playerDetails ? `${playerDetails.player.age} yrs • ${playerDetails.player.nationality}` : 'Loading...'}
+                                    {player.age} yrs • {player.nationality}
                                 </p>
                             </div>
                             
                             <!-- Hover Stats -->
                             <div class="absolute hidden group-hover:block bg-white border border-gray-200 rounded-lg shadow-lg p-4 z-10 left-full ml-2 top-0 w-64">
-                                {#if playerDetails}
-                                    <div class="text-sm space-y-2">
-                                        <p>Nationality: {playerDetails.player.nationality}</p>
-                                        <p>Appearances: {playerDetails.statistics?.games?.appearences ?? 'N/A'}</p>
-                                        <p>Minutes Played: {playerDetails.statistics?.games?.minutes ?? 'N/A'}</p>
-                                        <p>Rating: {Number(playerDetails.statistics?.games?.rating || 0).toFixed(1)}</p>
-                                        <p>Key Passes: {playerDetails.statistics?.passes?.key ?? 'N/A'}</p>
-                                        <p>Pass Accuracy: {playerDetails.statistics?.passes?.accuracy ? `${playerDetails.statistics.passes.accuracy}%` : 'N/A'}</p>
-                                        <p>Goals: {playerDetails.statistics?.goals?.total ?? 'N/A'}</p>
-                                        <p>Assists: {playerDetails.statistics?.goals?.assists ?? 'N/A'}</p>
-                                    </div>
-                                {:else}
-                                    <div class="text-sm">Loading player details...</div>
-                                {/if}
+                                <div class="text-sm space-y-2">
+                                    <p>Nationality: {player.nationality}</p>
+                                    <p>Appearances: {statistics?.games?.appearences ?? 'N/A'}</p>
+                                    <p>Minutes Played: {statistics?.games?.minutes ?? 'N/A'}</p>
+                                    <p>Rating: {Number(statistics?.games?.rating || 0).toFixed(1)}</p>
+                                    <p>Key Passes: {statistics?.passes?.key ?? 'N/A'}</p>
+                                    <p>Pass Accuracy: {statistics?.passes?.accuracy ? `${statistics.passes.accuracy}%` : 'N/A'}</p>
+                                    <p>Goals: {statistics?.goals?.total ?? 'N/A'}</p>
+                                    <p>Assists: {statistics?.goals?.assists ?? 'N/A'}</p>
+                                </div>
                             </div>
                         </div>
                     {/each}
@@ -196,14 +181,13 @@
             <section>
                 <h3 class="font-medium mb-2 text-lg">Attackers</h3>
                 <div class="space-y-2">
-                    {#each team.attackers as attacker (attacker.id)}
-                        {@const playerDetails = getAllPlayers().getPlayerById(attacker.id)}
+                    {#each team.attackers as [player, statistics] (player.id)}
                         <div class="flex items-center p-3 rounded-lg {getBackgroundColor('Attacker')} hover:shadow-md transition-shadow group relative">
                             <div class="w-12 h-12 rounded-full overflow-hidden mr-4 bg-gray-200">
-                                {#if playerDetails?.player.photo}
+                                {#if player.photo}
                                     <img 
-                                        src={playerDetails.player.photo} 
-                                        alt={playerDetails.player.name || `${playerDetails.player.firstname} ${playerDetails.player.lastname}`}
+                                        src={player.photo} 
+                                        alt={player.name || `${player.firstname} ${player.lastname}`}
                                         class="w-full h-full object-cover"
                                     />
                                 {:else}
@@ -214,29 +198,25 @@
                             </div>
                             <div class="flex-1">
                                 <h3 class="font-medium">
-                                    {playerDetails ? (playerDetails.player.name || `${playerDetails.player.firstname} ${playerDetails.player.lastname}`) : 'Loading...'}
+                                    {player.name || `${player.firstname} ${player.lastname}`}
                                 </h3>
                                 <p class="text-sm text-gray-600">
-                                    {playerDetails ? `${playerDetails.player.age} yrs • ${playerDetails.player.nationality}` : 'Loading...'}
+                                    {player.age} yrs • {player.nationality}
                                 </p>
                             </div>
                             
                             <!-- Hover Stats -->
                             <div class="absolute hidden group-hover:block bg-white border border-gray-200 rounded-lg shadow-lg p-4 z-10 left-full ml-2 top-0 w-64">
-                                {#if playerDetails}
-                                    <div class="text-sm space-y-2">
-                                        <p>Nationality: {playerDetails.player.nationality}</p>
-                                        <p>Appearances: {playerDetails.statistics?.games?.appearences ?? 'N/A'}</p>
-                                        <p>Minutes Played: {playerDetails.statistics?.games?.minutes ?? 'N/A'}</p>
-                                        <p>Rating: {Number(playerDetails.statistics?.games?.rating || 0).toFixed(1)}</p>
-                                        <p>Goals: {playerDetails.statistics?.goals?.total ?? 'N/A'}</p>
-                                        <p>Assists: {playerDetails.statistics?.goals?.assists ?? 'N/A'}</p>
-                                        <p>Shots on Target: {playerDetails.statistics?.shots?.on ?? 'N/A'}</p>
-                                        <p>Pass Accuracy: {playerDetails.statistics?.passes?.accuracy ? `${playerDetails.statistics.passes.accuracy}%` : 'N/A'}</p>
-                                    </div>
-                                {:else}
-                                    <div class="text-sm">Loading player details...</div>
-                                {/if}
+                                <div class="text-sm space-y-2">
+                                    <p>Nationality: {player.nationality}</p>
+                                    <p>Appearances: {statistics?.games?.appearences ?? 'N/A'}</p>
+                                    <p>Minutes Played: {statistics?.games?.minutes ?? 'N/A'}</p>
+                                    <p>Rating: {Number(statistics?.games?.rating || 0).toFixed(1)}</p>
+                                    <p>Goals: {statistics?.goals?.total ?? 'N/A'}</p>
+                                    <p>Assists: {statistics?.goals?.assists ?? 'N/A'}</p>
+                                    <p>Shots on Target: {statistics?.shots?.on ?? 'N/A'}</p>
+                                    <p>Pass Accuracy: {statistics?.passes?.accuracy ? `${statistics.passes.accuracy}%` : 'N/A'}</p>
+                                </div>
                             </div>
                         </div>
                     {/each}

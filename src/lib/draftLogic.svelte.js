@@ -230,11 +230,11 @@ export function executePick(teamId, isPlayer, playerTeam, teams, processedPlayer
     if (!position) return false;
 
     switch(position) {
-        case 'goalkeeper': team.keepers.push(player); break;
-        case 'defender': team.defenders.push(player); break;
-        case 'midfielder': team.midfielders.push(player); break;
+        case 'goalkeeper': team.keepers.push([player, statistics]); break;
+        case 'defender': team.defenders.push([player, statistics]); break;
+        case 'midfielder': team.midfielders.push([player, statistics]); break;
         case 'attacker':
-        case 'forward': team.attackers.push(player); break;
+        case 'forward': team.attackers.push([player, statistics]); break;
         default: return false;
     }
 
