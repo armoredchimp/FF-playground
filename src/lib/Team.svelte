@@ -1,6 +1,6 @@
 <script>
     import PlayerMini from './PlayerMini.svelte';
-    
+   
     let {
         team = {
             name: '',
@@ -15,11 +15,10 @@
         }
     } = $props();
     let isExpanded = $state(false);
-    
+   
     function expanded() {
         isExpanded = !isExpanded;
     }
-
     function handleViewTeamClick(e) {
         return e
     }
@@ -45,12 +44,43 @@
                 <span class="label">Total Players:</span>
                 <span class="value">{team.playerCount}</span>
             </div>
-            
-            <PlayerMini title="Attackers" players={team.attackers} />
-            <PlayerMini title="Midfielders" players={team.midfielders} />
-            <PlayerMini title="Defenders" players={team.defenders} />
-            <PlayerMini title="Keepers" players={team.keepers} />
-            
+           
+            <div class="position-group">
+                <span class="label">Attackers:</span>
+                <div class="player-images">
+                    {#each team.attackers as [player, statistics]}
+                        <PlayerMini {player} {statistics} />
+                    {/each}
+                </div>
+            </div>
+
+            <div class="position-group">
+                <span class="label">Midfielders:</span>
+                <div class="player-images">
+                    {#each team.midfielders as [player, statistics]}
+                        <PlayerMini {player} {statistics} />
+                    {/each}
+                </div>
+            </div>
+
+            <div class="position-group">
+                <span class="label">Defenders:</span>
+                <div class="player-images">
+                    {#each team.defenders as [player, statistics]}
+                        <PlayerMini {player} {statistics} />
+                    {/each}
+                </div>
+            </div>
+
+            <div class="position-group">
+                <span class="label">Keepers:</span>
+                <div class="player-images">
+                    {#each team.keepers as [player, statistics]}
+                        <PlayerMini {player} {statistics} />
+                    {/each}
+                </div>
+            </div>
+           
             <div class="traits-row">
                 <span class="label">Club Traits:</span>
                 <span class="value">
@@ -62,7 +92,7 @@
                 </span>
             </div>
             <div class="view-team-container">
-                <a 
+                <a
                     href="draft2/teams/{team.name.toLowerCase()}"
                     class="view-team-btn"
                     onclick={handleViewTeamClick}
@@ -79,7 +109,6 @@
         margin-top: 1rem;
         text-align: center;
     }
-
     .view-team-btn {
         display: inline-block;
         font-size: 0.875rem;
@@ -90,11 +119,10 @@
         text-decoration: none;
         transition: background-color 0.2s;
     }
-
     .view-team-btn:hover {
         background-color: #475569;
     }
-    
+   
     .team-card {
         width: 300px;
         text-align: left;
@@ -109,55 +137,55 @@
         -webkit-appearance: none;
         font: inherit;
     }
-
     .team-card:hover {
         background-color: #f8fafc;
     }
-
     .team-card.expanded {
         background-color: #f8fafc;
     }
-
     .team-header {
         margin-bottom: 0.5rem;
     }
-
     .expanded-content {
         margin-top: 1rem;
         padding-top: 1rem;
         border-top: 1px solid #e2e8f0;
     }
-
     .stat-row {
         display: flex;
         flex-direction: column;
         padding: 0.5rem 0;
     }
-
     .traits-row {
         border-top: 1px solid #e2e8f0;
         margin-top: 0.5rem;
         padding-top: 1rem;
     }
-
     h3 {
         margin: 0;
         font-size: 1.1rem;
         color: #333;
     }
-
     h4 {
         margin: 0.25rem 0 0 0;
         font-size: 0.9rem;
         color: #666;
     }
-
     .label {
         font-weight: 500;
         color: #4a5568;
     }
-
     .value {
         color: #2d3748;
+    }
+    .position-group {
+        display: flex;
+        flex-direction: column;
+        padding: 0.5rem 0;
+    }
+    .player-images {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
     }
 </style>
