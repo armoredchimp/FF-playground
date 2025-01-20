@@ -4,7 +4,7 @@
     import DraftTicker from "$lib/DraftTicker.svelte";
     import Team from "$lib/Team.svelte";
     import PlayerTeam from "$lib/PlayerTeam.svelte";
-    import { teams, playerTeam, draft, getDraftStage, getPlayersState, getDraftOrderState } from "$lib/stores.svelte";
+    import { teams, playerTeam, draft, getDraftStage, getPlayersState, getDraftOrderState, getAllPlayers } from "$lib/stores.svelte";
     import { 
         calculateTransferValue, 
         generateClubTraits, 
@@ -107,57 +107,63 @@
     }
     
     async function fetchAndProcessPlayers() {
-        if (playersState.loading) return;
-        playersState.setLoading(true);
-        const tempContainer = [];
-       
-        try {
-            const initialOptions = {
-                method: 'GET',
-                url: 'https://api-football-v1.p.rapidapi.com/v3/players',
+    if (playersState.loading) return;
+    playersState.setLoading(true);
+    const tempContainer = [];
+   
+    try {
+        const initialOptions = {
+            method: 'GET',
+            url: 'https://api-football-v1.p.rapidapi.com/v3/players',
+            params: {
+                league: '39',
+                season: '2023',
+                page: 1
+            },
+            headers: {
+                'x-rapidapi-key': import.meta.env.VITE_API_KEY,
+                'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+            }
+        };
+
+        const firstResponse = await axios.request(initialOptions);
+        playersState.setProgress({ current: 0, total: firstResponse.data.paging.total });
+        
+        if (firstResponse.data.response?.length) {
+            processPlayersData(firstResponse.data.response, tempContainer);
+        }
+
+        for (let i = 2; i <= playersState.progress.total; i++) {
+            playersState.setProgress({ ...playersState.progress, current: i });
+            const options = {
+                ...initialOptions,
                 params: {
-                    league: '39',
-                    season: '2023',
-                    page: 1
-                },
-                headers: {
-                    'x-rapidapi-key': import.meta.env.VITE_API_KEY,
-                    'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
+                    ...initialOptions.params,
+                    page: i
                 }
             };
-    
-            const firstResponse = await axios.request(initialOptions);
-            playersState.setProgress({ current: 0, total: firstResponse.data.paging.total });
             
-            if (firstResponse.data.response?.length) {
-                processPlayersData(firstResponse.data.response, tempContainer);
+            const response = await axios.request(options);
+            if (response.data.response?.length) {
+                processPlayersData(response.data.response, tempContainer);
             }
-    
-            for (let i = 2; i <= playersState.progress.total; i++) {
-                playersState.setProgress({ ...playersState.progress, current: i });
-                const options = {
-                    ...initialOptions,
-                    params: {
-                        ...initialOptions.params,
-                        page: i
-                    }
-                };
-                
-                const response = await axios.request(options);
-                if (response.data.response?.length) {
-                    processPlayersData(response.data.response, tempContainer);
-                }
-            }
-            
-            playersState.setProcessedPlayers(tempContainer.sort((a, b) => b.transferValue - a.transferValue));
-            draftStage.setComplete(true);
-            draftStage.setGate0(true);
-        } catch (err) {
-            console.error('Error:', err);
-        } finally {
-            playersState.setLoading(false);
         }
+        
+        const sortedPlayers = tempContainer.sort((a, b) => b.transferValue - a.transferValue);
+        
+        
+        getAllPlayers().setPlayers(sortedPlayers);
+        
+        // Set the processedPlayers as before for the draft
+        playersState.setProcessedPlayers(sortedPlayers);
+        draftStage.setComplete(true);
+        draftStage.setGate0(true);
+    } catch (err) {
+        console.error('Error:', err);
+    } finally {
+        playersState.setLoading(false);
     }
+}
     </script>
     
     {#if !draftStage.gate0}

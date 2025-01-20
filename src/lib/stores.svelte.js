@@ -264,6 +264,7 @@ export let playersState = $state({
     progress: { current: 0, total: 0 }
 });
 
+let allPlayers= $state([]);
 export let processedPlayers = $state([]);
 export let draftOrderList = $state([]);
 export let loading = $state(false);
@@ -294,6 +295,20 @@ export function getDraftOrderState(){
     }
 }
 
+export function getAllPlayers() {
+    return {
+        get players() { 
+            return allPlayers; 
+        },
+        setPlayers(players) { 
+            allPlayers = players; 
+        },
+        getPlayerById(playerId) {
+            return allPlayers.find(p => p.player.id === playerId);
+        }
+    };
+}
+
 export function getPlayersState() {
     return {
         get processedPlayers() { return playersState.processedPlayers; },
@@ -304,3 +319,4 @@ export function getPlayersState() {
         setProgress(value) { playersState.progress = value; }
     };
 }
+
