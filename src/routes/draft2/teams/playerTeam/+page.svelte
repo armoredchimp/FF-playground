@@ -4,6 +4,8 @@
     import TeamHeader from '$lib/TeamHeader.svelte';
     import FormationDisplay from '$lib/FormationDisplay.svelte';
     import { playerTeam } from '$lib/stores.svelte';
+
+  
 </script>
 
 <div class="page-container">

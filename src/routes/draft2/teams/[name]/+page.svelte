@@ -6,10 +6,7 @@
     import { teams, playerTeam, draftStageState, getDraftStage, getPlayersState, getDraftOrderState } from '$lib/stores.svelte';
 
     let { data }: { data: PageData } = $props();
-    function test(){
-        console.log(data)
-        // console.log(data.name)
-    }
+    
 </script>
 
 <div class="page-container">

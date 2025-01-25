@@ -1,4 +1,7 @@
 <script>
+    import { playerTeam } from "./stores.svelte";
+    import Select from "svelte-select";
+
     let {
         player = {
             id: 0,
@@ -12,15 +15,44 @@
         statistics = null,
         computer = false //if it belongs to AI or human player
     } = $props();
+
+    const selectablePlayers = () => {
+        const currentPosition = statistics?.games?.position;
+
+        let positionArray;
+        switch (currentPosition.toLowerCase()) {
+            case 'attacker':
+            case 'forward':
+                positionArray = playerTeam.attackers;
+                break;
+            case 'midfielder':
+                positionArray = playerTeam.midfielders;
+                break;
+            case 'defender':
+                positionArray = playerTeam.defenders;
+                break;
+            case 'goalkeeper':
+            case 'keeper':
+                positionArray = playerTeam.keepers;
+                break;
+            default:
+                return [];
+        }
+
+        return positionArray
+        .filter(playerData => playerData[0].id !== player.id)  
+        .map(playerData => ({                                 
+            value: playerData[0].id,
+            label: playerData[0].name || `${playerData[0].firstname} ${playerData[0].lastname}`
+        }));
+    }
 </script>
 
 <div class="player-display">
     <div class="player-info">
         <p class="name">{player.name || `${player.firstname} ${player.lastname}`}</p>
         {#if !computer}
-        <select class="player-select">
-            <option value="">Select Player</option>
-        </select>
+            <Select items={selectablePlayers()}/>
         {/if}
     </div>
     <div class="player-details">
