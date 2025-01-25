@@ -45,7 +45,7 @@
                     </div>
                     
                     
-                    <div class="absolute hidden group-hover:block bg-white border border-gray-200 rounded-lg shadow-lg p-4 z-10 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-64">
+                    <div class="absolute hidden group-hover:block bg-white border border-gray-200 rounded-lg shadow-lg p-4 z-10 left-3/4 top-1/2 -translate-x-1/2 -translate-y-1/2 w-64">
                         <div class="text-sm space-y-2">
                             <div class="flex justify-between items-center w-full border-b pb-2">
                                 <span class="font-medium">
