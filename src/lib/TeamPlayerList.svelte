@@ -48,6 +48,8 @@
 <style>
     .player-list-container {
         min-width: 500px;
+        max-width: 800px;
+        margin: 0 auto;
         flex: 1;
         padding: 0 1rem;
     }
