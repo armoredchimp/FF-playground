@@ -6,8 +6,10 @@
         attackers: [],
         midfielders: [],
         defenders: [],
-        keepers: []
-    }} = $props();
+        keepers: []    
+    },
+        computer = true
+        } = $props();
     
     const positionCounts = {
         attackers: 2,
@@ -28,28 +30,28 @@
     <!-- Attackers Row -->
     <div class="position-row attackers-row">
         {#each displayPositions.attackers as [player, statistics]}
-            <FormationPlayer {player} {statistics}/>
+            <FormationPlayer {player} {statistics} {computer}/>
         {/each}
     </div>
 
     <!-- Midfielders Row -->
     <div class="position-row midfielders-row">
         {#each displayPositions.midfielders as [player, statistics]}
-            <FormationPlayer {player} {statistics}/>
+            <FormationPlayer {player} {statistics} {computer}/>
         {/each}
     </div>
 
     <!-- Defenders Row -->
     <div class="position-row defenders-row">
         {#each displayPositions.defenders as [player, statistics]}
-            <FormationPlayer {player} {statistics}/>
+            <FormationPlayer {player} {statistics} {computer}/>
         {/each}
     </div>
 
     <!-- Keeper Row -->
     <div class="position-row keeper-row">
         {#each displayPositions.keepers as [player, statistics]}
-            <FormationPlayer {player} {statistics}/>
+            <FormationPlayer {player} {statistics} {computer}/>
         {/each}
     </div>
 </div>

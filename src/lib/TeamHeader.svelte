@@ -10,7 +10,8 @@
             playerCount: 0,
             traits: [],
             transferBudget: 0
-        }
+        },
+        computer = false
     } = $props();
 </script>
 
@@ -23,7 +24,9 @@
             <div class="text-sm text-gray-600 mt-1" style="margin-top: 0.8rem;">
                 Draft Position: {team.draftOrder} | Players: {team.playerCount}
             </div>
+            {#if computer}
             <div class="text-sm text-gray-600 mt-1" style="margin-top: 0.8rem;">Club Traits: {team.traits.length > 0 ? team.traits : 'None'}</div>
+            {/if}
         </div>
     </div>
 </div>

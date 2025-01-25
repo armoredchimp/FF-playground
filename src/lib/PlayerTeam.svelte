@@ -83,6 +83,15 @@
                     </div>
                 {/each}
             </div>
+            <div class="view-team-container">
+                <a
+                    href="draft2/teams/playerTeam"
+                    class="view-team-btn"
+                    
+                >
+                    View Team
+                </a>
+            </div>
         </div>
     </div>
 </div>
@@ -171,6 +180,24 @@
         color: #4a5568;
     }
 
+    .view-team-container {
+        margin-top: 1rem;
+        text-align: center;
+    }
+    .view-team-btn {
+        display: inline-block;
+        font-size: 0.875rem;
+        padding: 0.5rem 1rem;
+        background-color: #64748b;
+        color: white;
+        border-radius: 4px;
+        text-decoration: none;
+        transition: background-color 0.2s;
+    }
+    .view-team-btn:hover {
+        background-color: #475569;
+    }
+    
     h3 {
         margin: 0;
         font-size: 1.5rem;

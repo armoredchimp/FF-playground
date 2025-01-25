@@ -9,16 +9,19 @@
             nationality: '',
             photo: ''
         },
-        statistics = null
+        statistics = null,
+        computer = false //if it belongs to AI or human player
     } = $props();
 </script>
 
 <div class="player-display">
     <div class="player-info">
         <p class="name">{player.name || `${player.firstname} ${player.lastname}`}</p>
+        {#if !computer}
         <select class="player-select">
             <option value="">Select Player</option>
         </select>
+        {/if}
     </div>
     <div class="player-details">
         {#if player.photo}

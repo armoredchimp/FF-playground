@@ -19,9 +19,7 @@
     function expanded() {
         isExpanded = !isExpanded;
     }
-    function handleViewTeamClick(e) {
-        return e
-    }
+   
 </script>
 
 <button
@@ -95,7 +93,7 @@
                 <a
                     href="draft2/teams/{team.name.toLowerCase()}"
                     class="view-team-btn"
-                    onclick={handleViewTeamClick}
+                    
                 >
                     View Team
                 </a>

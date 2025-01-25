@@ -1,6 +1,6 @@
 <script>
     import axios from 'axios';
-    import Player2 from '$lib/Player2.svelte';
+    import Player2 from '$lib/temp/Player2.svelte';
 	
 
     let playersPool = $state()

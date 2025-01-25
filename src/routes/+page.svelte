@@ -1,6 +1,6 @@
 <script>
     import axios from 'axios';
-    import Player from '$lib/Player.svelte';
+    import Player from '$lib/temp/Player.svelte';
 
 
 let teamNumber = $state(0)

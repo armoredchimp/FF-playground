@@ -1,30 +1,24 @@
 <script lang="ts">
-    import type { PageData } from './$types';
+    
     import TeamPlayerList from '$lib/TeamPlayerList.svelte';
     import TeamHeader from '$lib/TeamHeader.svelte';
     import FormationDisplay from '$lib/FormationDisplay.svelte';
-    import { teams, playerTeam, draftStageState, getDraftStage, getPlayersState, getDraftOrderState } from '$lib/stores.svelte';
-
-    let { data }: { data: PageData } = $props();
-    function test(){
-        console.log(data)
-        // console.log(data.name)
-    }
+    import { playerTeam } from '$lib/stores.svelte';
 </script>
 
 <div class="page-container">
-    <div><TeamHeader team={data.team} computer={true}/></div>
-    {#if data.team?.playerCount >= 11}
+    <div><TeamHeader team={playerTeam} computer={false}/></div>
+    {#if playerTeam?.playerCount >= 11}
     <div class="main-cont">
         <div class="formation">
-            <FormationDisplay team={data.team} />
+            <FormationDisplay team={playerTeam} computer={false}/>
         </div>
         <div class="team-list">
-            <TeamPlayerList team={data.team}/>
+            <TeamPlayerList team={playerTeam}/>
         </div>    
     </div>
     {:else}
-        <TeamPlayerList team={data.team}/>
+        <TeamPlayerList team={playerTeam}/>
     {/if}
 </div>
         
