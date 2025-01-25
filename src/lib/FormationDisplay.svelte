@@ -4,12 +4,16 @@
     let { team = {
         formation: '',
         attackers: [],
+        selectedAttackers: [],
         midfielders: [],
+        selectedMidfielders: [],
         defenders: [],
-        keepers: []    
+        selectedDefenders: [],
+        keepers: [],
+        selectedKeepers: [],   
     },
         computer = true
-        } = $props();
+    } = $props();
     
     const positionCounts = {
         attackers: 2,
@@ -18,39 +22,38 @@
         keepers: 1
     };
 
-    const displayPositions = {
-        attackers: team.attackers.slice(0, positionCounts.attackers),
-        midfielders: team.midfielders.slice(0, positionCounts.midfielders),
-        defenders: team.defenders.slice(0, positionCounts.defenders),
-        keepers: team.keepers.slice(0, positionCounts.keepers)
-    };
+    // Directly push sliced players into selected arrays
+    team.selectedAttackers = team.attackers.slice(0, positionCounts.attackers);
+    team.selectedMidfielders = team.midfielders.slice(0, positionCounts.midfielders);
+    team.selectedDefenders = team.defenders.slice(0, positionCounts.defenders);
+    team.selectedKeepers = team.keepers.slice(0, positionCounts.keepers);
 </script>
 
 <div class="formation-display">
     <!-- Attackers Row -->
     <div class="position-row attackers-row">
-        {#each displayPositions.attackers as [player, statistics, selected]}
+        {#each team.selectedAttackers as [player, statistics, selected]}
             <FormationPlayer {player} {statistics} {computer} {selected}/>
         {/each}
     </div>
 
     <!-- Midfielders Row -->
     <div class="position-row midfielders-row">
-        {#each displayPositions.midfielders as [player, statistics, selected]}
+        {#each team.selectedMidfielders as [player, statistics, selected]}
             <FormationPlayer {player} {statistics} {computer} {selected}/>
         {/each}
     </div>
 
     <!-- Defenders Row -->
     <div class="position-row defenders-row">
-        {#each displayPositions.defenders as [player, statistics, selected]}
+        {#each team.selectedDefenders as [player, statistics, selected]}
             <FormationPlayer {player} {statistics} {computer} {selected}/>
         {/each}
     </div>
 
     <!-- Keeper Row -->
     <div class="position-row keeper-row">
-        {#each displayPositions.keepers as [player, statistics, selected]}
+        {#each team.selectedKeepers as [player, statistics, selected]}
             <FormationPlayer {player} {statistics} {computer} {selected}/>
         {/each}
     </div>
