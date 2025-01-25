@@ -29,29 +29,29 @@
 <div class="formation-display">
     <!-- Attackers Row -->
     <div class="position-row attackers-row">
-        {#each displayPositions.attackers as [player, statistics]}
-            <FormationPlayer {player} {statistics} {computer}/>
+        {#each displayPositions.attackers as [player, statistics, selected]}
+            <FormationPlayer {player} {statistics} {computer} {selected}/>
         {/each}
     </div>
 
     <!-- Midfielders Row -->
     <div class="position-row midfielders-row">
-        {#each displayPositions.midfielders as [player, statistics]}
-            <FormationPlayer {player} {statistics} {computer}/>
+        {#each displayPositions.midfielders as [player, statistics, selected]}
+            <FormationPlayer {player} {statistics} {computer} {selected}/>
         {/each}
     </div>
 
     <!-- Defenders Row -->
     <div class="position-row defenders-row">
-        {#each displayPositions.defenders as [player, statistics]}
-            <FormationPlayer {player} {statistics} {computer}/>
+        {#each displayPositions.defenders as [player, statistics, selected]}
+            <FormationPlayer {player} {statistics} {computer} {selected}/>
         {/each}
     </div>
 
     <!-- Keeper Row -->
     <div class="position-row keeper-row">
-        {#each displayPositions.keepers as [player, statistics]}
-            <FormationPlayer {player} {statistics} {computer}/>
+        {#each displayPositions.keepers as [player, statistics, selected]}
+            <FormationPlayer {player} {statistics} {computer} {selected}/>
         {/each}
     </div>
 </div>

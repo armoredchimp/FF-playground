@@ -191,7 +191,7 @@ export function getValueBasedScore(index, player, traits = []) {
     return score;
 }
 
-export function executePick(teamId, isPlayer, playerTeam, teams, processedPlayers, player = null, statistics = null, transferValue = null) {
+export function executePick(teamId, isPlayer, playerTeam, teams, processedPlayers, player = null, statistics = null, transferValue = null, selected = null) {
     const team = teamId === 'player' ? playerTeam : teams[teamId];
     const traits = team.traits || [];
     
@@ -230,11 +230,11 @@ export function executePick(teamId, isPlayer, playerTeam, teams, processedPlayer
     if (!position) return false;
 
     switch(position) {
-        case 'goalkeeper': team.keepers.push([player, statistics]); break;
-        case 'defender': team.defenders.push([player, statistics]); break;
-        case 'midfielder': team.midfielders.push([player, statistics]); break;
+        case 'goalkeeper': team.keepers.push([player, statistics, selected]); break;
+        case 'defender': team.defenders.push([player, statistics, selected]); break;
+        case 'midfielder': team.midfielders.push([player, statistics, selected]); break;
         case 'attacker':
-        case 'forward': team.attackers.push([player, statistics]); break;
+        case 'forward': team.attackers.push([player, statistics, selected]); break;
         default: return false;
     }
 

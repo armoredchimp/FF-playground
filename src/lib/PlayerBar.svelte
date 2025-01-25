@@ -20,29 +20,29 @@
     <section>
         <h3 class="font-medium mb-2 text-lg">{title}</h3>
         <div class="space-y-2">
-            {#each players as [player, statistics] (player.id)}
-                <div class="flex items-center p-3 rounded-lg {getBackgroundColor(position)} hover:shadow-md transition-shadow group relative">
-                    <div class="w-12 h-12 rounded-full overflow-hidden mr-4 bg-gray-200">
-                        {#if player.photo}
-                            <img 
-                                src={player.photo} 
-                                alt={player.name || `${player.firstname} ${player.lastname}`}
-                                class="w-full h-full object-cover"
-                            />
-                        {:else}
-                            <div class="w-full h-full flex items-center justify-center text-gray-500">
-                                <span class="text-xl">👤</span>
-                            </div>
-                        {/if}
-                    </div>
-                    <div class="flex-1">
-                        <h3 class="font-medium">
-                            {player.name || `${player.firstname} ${player.lastname}`}
-                        </h3>
-                        <p class="text-sm text-gray-600">
-                            {player.age} yrs • {player.nationality}
-                        </p>
-                    </div>
+            {#each players as [player, statistics, selected] (player.id)}
+            <div class="flex items-center p-3 rounded-lg {getBackgroundColor(position)} hover:shadow-md transition-shadow group relative {selected ? 'border-2 border-indigo-400' : ''}" >
+                <div class="w-12 h-12 rounded-full overflow-hidden mr-4 bg-gray-200">
+                    {#if player.photo}
+                        <img 
+                            src={player.photo} 
+                            alt={player.name || `${player.firstname} ${player.lastname}`}
+                            class="w-full h-full object-cover"
+                        />
+                    {:else}
+                        <div class="w-full h-full flex items-center justify-center text-gray-500">
+                            <span class="text-xl">👤</span>
+                        </div>
+                    {/if}
+                </div>
+                <div class="flex-1">
+                    <h3 class="font-medium">
+                        {player.name || `${player.firstname} ${player.lastname}`}
+                    </h3>
+                    <p class="text-sm text-gray-600">
+                        {player.age} yrs • {player.nationality}
+                    </p>
+                </div>
                     
                     
                     <div class="absolute hidden group-hover:block bg-white border border-gray-200 rounded-lg shadow-lg p-4 z-10 left-3/4 top-1/2 -translate-x-1/2 -translate-y-1/2 w-64">
