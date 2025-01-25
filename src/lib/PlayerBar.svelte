@@ -44,11 +44,13 @@
                         </p>
                     </div>
                     
-                    <!-- Hover Stats - Now appears above -->
-                    <div class="absolute hidden group-hover:block bg-white border border-gray-200 rounded-lg shadow-lg p-4 z-10 bottom-full left-0 mb-2">
-                        <div class="text-sm space-y-2 w-72">
-                            <div class="flex justify-between border-b pb-2 mb-2">
-                                <span class="font-medium">{player.name || `${player.firstname} ${player.lastname}`}</span>
+                    
+                    <div class="absolute hidden group-hover:block bg-white border border-gray-200 rounded-lg shadow-lg p-4 z-10 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-64">
+                        <div class="text-sm space-y-2">
+                            <div class="flex justify-between items-center w-full border-b pb-2">
+                                <span class="font-medium">
+                                    {player.name || `${player.firstname} ${player.lastname}`}
+                                </span>
                                 <span class="text-gray-600">{position}</span>
                             </div>
                             <p>Nationality: {player.nationality}</p>

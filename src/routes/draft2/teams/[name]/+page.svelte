@@ -14,7 +14,7 @@
 
 <div class="page-container">
     <div><TeamHeader team={data.team} /></div>
-
+    {#if data.team?.playerCount >= 11}
     <div class="main-cont">
         <div class="formation">
             <FormationDisplay team={data.team} />
@@ -23,7 +23,11 @@
             <TeamPlayerList team={data.team}/>
         </div>    
     </div>
+    {:else}
+        <TeamPlayerList team={data.team}/>
+    {/if}
 </div>
+        
 
 <style>
     .page-container {

@@ -15,7 +15,7 @@
 
 <div class="player-display">
     <div class="player-info">
-        <p class="lastname">{player.lastname || 'N/A'}</p>
+        <p class="name">{player.name || `${player.firstname} ${player.lastname}`}</p>
         <select class="player-select">
             <option value="">Select Player</option>
         </select>
@@ -49,7 +49,7 @@
         gap: 0.25rem;
     }
 
-    .lastname {
+    .name {
         margin: 0;
         font-size: 1rem;
         font-weight: 600;
