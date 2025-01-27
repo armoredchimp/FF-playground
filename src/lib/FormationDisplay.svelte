@@ -4,13 +4,10 @@
     let { team = {
         formation: '',
         attackers: [],
-        selectedAttackers: [],
         midfielders: [],
-        selectedMidfielders: [],
         defenders: [],
-        selectedDefenders: [],
         keepers: [],
-        selectedKeepers: [],   
+        selected: []  
     },
         computer = true
     } = $props();
@@ -23,38 +20,38 @@
     };
 
     // Directly push sliced players into selected arrays
-    team.selectedAttackers = team.attackers.slice(0, positionCounts.attackers);
-    team.selectedMidfielders = team.midfielders.slice(0, positionCounts.midfielders);
-    team.selectedDefenders = team.defenders.slice(0, positionCounts.defenders);
-    team.selectedKeepers = team.keepers.slice(0, positionCounts.keepers);
+    team.selected[0] = team.attackers.slice(0, positionCounts.attackers);
+    team.selected[1] = team.midfielders.slice(0, positionCounts.midfielders);
+    team.selected[2] = team.defenders.slice(0, positionCounts.defenders);
+    team.selected[3] = team.keepers.slice(0, positionCounts.keepers);
 </script>
 
 <div class="formation-display">
     <!-- Attackers Row -->
     <div class="position-row attackers-row">
-        {#each team.selectedAttackers as [player, statistics, selected]}
-            <FormationPlayer {player} {statistics} {computer} {selected}/>
+        {#each team.selected[0] as [player, statistics]}
+            <FormationPlayer {player} {statistics} {computer}/>
         {/each}
     </div>
 
     <!-- Midfielders Row -->
     <div class="position-row midfielders-row">
-        {#each team.selectedMidfielders as [player, statistics, selected]}
-            <FormationPlayer {player} {statistics} {computer} {selected}/>
+        {#each team.selected[1] as [player, statistics]}
+            <FormationPlayer {player} {statistics} {computer}/>
         {/each}
     </div>
 
     <!-- Defenders Row -->
     <div class="position-row defenders-row">
-        {#each team.selectedDefenders as [player, statistics, selected]}
-            <FormationPlayer {player} {statistics} {computer} {selected}/>
+        {#each team.selected[2] as [player, statistics]}
+            <FormationPlayer {player} {statistics} {computer}/>
         {/each}
     </div>
 
     <!-- Keeper Row -->
     <div class="position-row keeper-row">
-        {#each team.selectedKeepers as [player, statistics, selected]}
-            <FormationPlayer {player} {statistics} {computer} {selected}/>
+        {#each team.selected[3] as [player, statistics]}
+            <FormationPlayer {player} {statistics} {computer}/>
         {/each}
     </div>
 </div>

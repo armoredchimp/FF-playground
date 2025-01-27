@@ -14,7 +14,6 @@
         },
         statistics = null,
         computer = false, // if it belongs to AI or human player
-        selected = true
     } = $props();
 
     const selectablePlayers = () => {
