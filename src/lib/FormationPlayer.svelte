@@ -16,65 +16,103 @@
         computer = false, // if it belongs to AI or human player
     } = $props();
 
-    let oldPlayer = null
-    let newPlayer = {
-            id: 0,
-            name: '',
-            age: 0,
-            firstname: '',
-            lastname: '',
-            nationality: '',
-            photo: ''
-        }
-
+ 
+    let positionArray = []
     let currPositionArray = 0    
 
     const selectablePlayers = () => {
         const currentPosition = statistics?.games?.position;
 
-        let positionArray;
+        // Determine the position array based on the player's position
         switch (currentPosition.toLowerCase()) {
             case 'attacker':
             case 'forward':
                 positionArray = playerTeam.attackers;
-                currPositionArray = 0
+                currPositionArray = 0;
                 break;
             case 'midfielder':
                 positionArray = playerTeam.midfielders;
-                currPositionArray = 1
+                currPositionArray = 1;
                 break;
             case 'defender':
                 positionArray = playerTeam.defenders;
-                currPositionArray = 2
+                currPositionArray = 2;
                 break;
             case 'goalkeeper':
             case 'keeper':
                 positionArray = playerTeam.keepers;
-                currPositionArray = 3
+                currPositionArray = 3;
                 break;
             default:
                 return [];
         }
 
+        // Get all currently selected players across all positions
+        const allSelectedPlayers = playerTeam.selected.flat();
+
+        // Filter out the current player and any players already selected
         return positionArray
-            .filter(playerData => playerData[0].id !== player.id)
+            .filter(playerData => {
+                // Exclude the current player
+                const isCurrentPlayer = playerData[0].id === player.id;
+                // Exclude players already selected in any position
+                const isAlreadySelected = allSelectedPlayers.some(selectedPlayer => selectedPlayer[0].id === playerData[0].id);
+                return !isCurrentPlayer && !isAlreadySelected;
+            })
             .map(playerData => ({
                 value: playerData[0].id,
                 label: playerData[0].name || `${playerData[0].firstname} ${playerData[0].lastname}`
             }));
-    }
+    };
 
     const onChange = (e) => {
-        e.preventDefault()
-        oldPlayer = player
-        const selectedPlayerName = e.detail.label
-        // console.log(playerTeam.selected[currPositionArray])
-        const selectedPlayer = playerTeam.selected[currPositionArray].find((player) => selectedPlayerName === player[0].name)
-        
-        player = {...selectedPlayer[0]}
+        e.preventDefault();
 
-        
-    }
+        // Store the old player and statistics
+        const oldPlayer = [player, statistics];
+
+        let newPlayer = null;
+        const selectedPlayerName = e.detail.label;
+        const currPos = playerTeam.selected[currPositionArray];
+
+        // Look for the selected player in the currently selected players
+        newPlayer = currPos.find((player) => selectedPlayerName === player[0].name);
+
+        if (newPlayer) {
+            // If the selected player is already in the current position, swap them
+            const oldPlayerIndex = currPos.findIndex((p) => p[0].id === player.id);
+            if (oldPlayerIndex !== -1) {
+                // Remove the old player
+                currPos.splice(oldPlayerIndex, 1);
+                // Add the new player in its place
+                currPos.splice(oldPlayerIndex, 0, newPlayer);
+            }
+        } else {
+            // If the selected player is not in the current position, look for them in the bench or full position array
+            newPlayer = positionArray.find((player) => selectedPlayerName === player[0].name);
+
+            if (newPlayer) {
+                // Remove the old player from the current position
+                const oldPlayerIndex = currPos.findIndex((p) => p[0].id === player.id);
+                if (oldPlayerIndex !== -1) {
+                    currPos.splice(oldPlayerIndex, 1);
+                }
+                // Add the new player to the current position
+                currPos.push(newPlayer);
+            }
+        }
+
+        // Update the player and statistics
+        if (newPlayer) {
+            player = { ...newPlayer[0] };
+            statistics = newPlayer[1];
+        }
+
+        // Debugging logs
+        console.log('oldPlayer: ', ...oldPlayer);
+        console.log('newPlayer: ', player, statistics);
+        console.log('currPos: ', currPos);
+    };
 </script>
 
 <div class="player-display">
