@@ -13,104 +13,55 @@
             photo: ''
         },
         statistics = null,
-        computer = false, // if it belongs to AI or human player
+        computer = false,
     } = $props();
 
- 
-    let positionArray = []
-    let currPositionArray = 0    
+    let positionArray = [];
+    let currPositionArray = 0;
+
+    const positionMap = {
+        attacker: { array: playerTeam.attackers, index: 0 },
+        midfielder: { array: playerTeam.midfielders, index: 1 },
+        defender: { array: playerTeam.defenders, index: 2 },
+        goalkeeper: { array: playerTeam.keepers, index: 3 },
+    };
 
     const selectablePlayers = () => {
-        const currentPosition = statistics?.games?.position;
+        const currentPosition = statistics?.games?.position?.toLowerCase();
+        const { array, index } = positionMap[currentPosition] || { array: [], index: 0 };
+        positionArray = array;
+        currPositionArray = index;
 
-        // Determine the position array based on the player's position
-        switch (currentPosition.toLowerCase()) {
-            case 'attacker':
-            case 'forward':
-                positionArray = playerTeam.attackers;
-                currPositionArray = 0;
-                break;
-            case 'midfielder':
-                positionArray = playerTeam.midfielders;
-                currPositionArray = 1;
-                break;
-            case 'defender':
-                positionArray = playerTeam.defenders;
-                currPositionArray = 2;
-                break;
-            case 'goalkeeper':
-            case 'keeper':
-                positionArray = playerTeam.keepers;
-                currPositionArray = 3;
-                break;
-            default:
-                return [];
-        }
-
-        // Get all currently selected players across all positions
         const allSelectedPlayers = playerTeam.selected.flat();
+        const selectedIds = new Set(allSelectedPlayers.map(p => p[0].id));
 
-        // Filter out the current player and any players already selected
         return positionArray
-            .filter(playerData => {
-                // Exclude the current player
-                const isCurrentPlayer = playerData[0].id === player.id;
-                // Exclude players already selected in any position
-                const isAlreadySelected = allSelectedPlayers.some(selectedPlayer => selectedPlayer[0].id === playerData[0].id);
-                return !isCurrentPlayer && !isAlreadySelected;
-            })
-            .map(playerData => ({
-                value: playerData[0].id,
-                label: playerData[0].name || `${playerData[0].firstname} ${playerData[0].lastname}`
+            .filter(([p]) => p.id !== player.id && !selectedIds.has(p.id))
+            .map(([p]) => ({
+                value: p.id,
+                label: p.name || `${p.firstname} ${p.lastname}`
             }));
     };
 
     const onChange = (e) => {
-        e.preventDefault();
-
-        // Store the old player and statistics
-        const oldPlayer = [player, statistics];
-
-        let newPlayer = null;
+        
         const selectedPlayerName = e.detail.label;
         const currPos = playerTeam.selected[currPositionArray];
 
-        // Look for the selected player in the currently selected players
-        newPlayer = currPos.find((player) => selectedPlayerName === player[0].name);
+        const newPlayer = currPos.find(([p]) => p.name === selectedPlayerName) ||
+                          positionArray.find(([p]) => p.name === selectedPlayerName);
 
-        if (newPlayer) {
-            // If the selected player is already in the current position, swap them
-            const oldPlayerIndex = currPos.findIndex((p) => p[0].id === player.id);
-            if (oldPlayerIndex !== -1) {
-                // Remove the old player
-                currPos.splice(oldPlayerIndex, 1);
-                // Add the new player in its place
-                currPos.splice(oldPlayerIndex, 0, newPlayer);
-            }
-        } else {
-            // If the selected player is not in the current position, look for them in the bench or full position array
-            newPlayer = positionArray.find((player) => selectedPlayerName === player[0].name);
+        if (!newPlayer) return;
 
-            if (newPlayer) {
-                // Remove the old player from the current position
-                const oldPlayerIndex = currPos.findIndex((p) => p[0].id === player.id);
-                if (oldPlayerIndex !== -1) {
-                    currPos.splice(oldPlayerIndex, 1);
-                }
-                // Add the new player to the current position
-                currPos.push(newPlayer);
-            }
-        }
+        const oldPlayerIndex = currPos.findIndex(([p]) => p.id === player.id);
+        if (oldPlayerIndex !== -1) currPos.splice(oldPlayerIndex, 1);
 
-        // Update the player and statistics
-        if (newPlayer) {
-            player = { ...newPlayer[0] };
-            statistics = newPlayer[1];
-        }
+        currPos.push(newPlayer);
+        player = { ...newPlayer[0] };
+        statistics = newPlayer[1];
 
-        // Debugging logs
-        console.log('oldPlayer: ', ...oldPlayer);
-        console.log('newPlayer: ', player, statistics);
+        console.log('oldPlayer: ', player, statistics);
+        console.log('newPlayer: ', newPlayer[0], newPlayer[1]);
         console.log('currPos: ', currPos);
     };
 </script>
@@ -134,22 +85,22 @@
 
 <style>
     .player-display {
-        background: linear-gradient(135deg, #ffffff, #f9fafb); /* Gradient background */
+        background: linear-gradient(135deg, #ffffff, #f9fafb);
         border: 1px solid #e2e8f0;
-        border-radius: 12px; /* Rounded corners */
+        border-radius: 12px;
         padding: 1rem;
-        width: 220px; /* Slightly wider for better spacing */
-        height: 180px; /* Increased height to fit everything */
+        width: 220px;
+        height: 180px;
         display: flex;
         flex-direction: column;
         gap: 0.75rem;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
     .player-display:hover {
-        transform: translateY(-2px); /* Slight lift on hover */
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15); /* Enhanced shadow on hover */
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
     }
 
     .player-info {
@@ -160,15 +111,15 @@
 
     .name {
         margin: 0;
-        font-size: 1.1rem; /* Slightly larger */
-        font-weight: 700; /* Bolder */
-        color: #1a202c; /* Darker text for contrast */
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #1a202c;
     }
 
     .player-select {
         width: 100%;
         border: 1px solid #e2e8f0;
-        border-radius: 6px; /* Rounded corners */
+        border-radius: 6px;
         font-size: 0.875rem;
         background-color: white;
         padding: 0.5rem;
@@ -176,30 +127,30 @@
     }
 
     .player-select:hover {
-        border-color: #a0aec0; /* Highlight border on hover */
-        box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.2); /* Focus effect */
+        border-color: #a0aec0;
+        box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.2);
     }
 
     .player-details {
         display: flex;
         align-items: center;
-        gap: 1rem; /* Increased gap for better spacing */
-        margin-top: auto; /* Push details to the bottom */
+        gap: 1rem;
+        margin-top: auto;
     }
 
     .player-photo {
-        width: 60px; /* Slightly larger */
+        width: 60px;
         height: 60px;
-        border-radius: 50%; /* Perfect circle */
+        border-radius: 50%;
         object-fit: cover;
-        border: 2px solid #ffffff; /* White border */
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+        border: 2px solid #ffffff;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
     .player-photo:hover {
-        transform: scale(1.05); /* Slight zoom on hover */
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Enhanced shadow on hover */
+        transform: scale(1.05);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
     }
 
     .photo-placeholder {
@@ -216,10 +167,10 @@
 
     .position {
         font-size: 0.875rem;
-        font-weight: 600; /* Bolder */
+        font-weight: 600;
         color: #4a5568;
-        background: #edf2f7; /* Light background */
+        background: #edf2f7;
         padding: 0.25rem 0.5rem;
-        border-radius: 4px; /* Rounded corners */
+        border-radius: 4px;
     }
 </style>
