@@ -44,7 +44,7 @@
     };
 
     const onChange = (e) => {
-        
+        console.log(playerTeam)
         const selectedPlayerName = e.detail.label;
         const currPos = playerTeam.selected[currPositionArray];
 
@@ -60,9 +60,9 @@
         player = { ...newPlayer[0] };
         statistics = newPlayer[1];
 
-        console.log('oldPlayer: ', player, statistics);
-        console.log('newPlayer: ', newPlayer[0], newPlayer[1]);
-        console.log('currPos: ', currPos);
+        // console.log('oldPlayer: ', player, statistics);
+        // console.log('newPlayer: ', newPlayer[0], newPlayer[1]);
+        // console.log('currPos: ', currPos);
     };
 </script>
 

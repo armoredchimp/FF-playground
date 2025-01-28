@@ -22,6 +22,8 @@
         skipToPlayerPick 
     } from '$lib/draftLogic.svelte';
     
+    
+
     // Get state management
     const draftStage = getDraftStage();
     const playersState = getPlayersState();

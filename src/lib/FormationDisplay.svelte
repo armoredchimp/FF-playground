@@ -7,7 +7,8 @@
         midfielders: [],
         defenders: [],
         keepers: [],
-        selected: []  
+        selected: [],
+        formationDisplayed: false  
     },
         computer = true
     } = $props();
@@ -19,13 +20,17 @@
         keepers: 1
     };
 
+    
     // Directly push sliced players into selected arrays
-    team.selected[0] = team.attackers.slice(0, positionCounts.attackers);
-    team.selected[1] = team.midfielders.slice(0, positionCounts.midfielders);
-    team.selected[2] = team.defenders.slice(0, positionCounts.defenders);
-    team.selected[3] = team.keepers.slice(0, positionCounts.keepers);
+    if(!team.formationDisplayed){
+        team.selected[0] = team.attackers.slice(0, positionCounts.attackers);
+        team.selected[1] = team.midfielders.slice(0, positionCounts.midfielders);
+        team.selected[2] = team.defenders.slice(0, positionCounts.defenders);
+        team.selected[3] = team.keepers.slice(0, positionCounts.keepers);
+        team.formationDisplayed = true
+    }
 </script>
-
+<h4>{team.formationDisplayed}</h4>
 <div class="formation-display">
     <!-- Attackers Row -->
     <div class="position-row attackers-row">

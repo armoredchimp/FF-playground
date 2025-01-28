@@ -85,7 +85,7 @@
             </div>
             <div class="view-team-container">
                 <a
-                    href="draft2/teams/playerTeam"
+                    href="draft2/teams/player"
                     class="view-team-btn"
                     
                 >

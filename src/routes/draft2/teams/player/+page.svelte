@@ -5,10 +5,13 @@
     import FormationDisplay from '$lib/FormationDisplay.svelte';
     import { playerTeam } from '$lib/stores.svelte';
 
-  
+    // const atks = $derived(
+    //     playerTeam.selected[0].map(player => player[0].name)
+    // )
 </script>
 
 <div class="page-container">
+    <!-- <h4>{atks}</h4> -->
     <div><TeamHeader team={playerTeam} computer={false}/></div>
     {#if playerTeam?.playerCount >= 11}
     <div class="main-cont">
