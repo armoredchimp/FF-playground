@@ -16,6 +16,19 @@
         computer = false, // if it belongs to AI or human player
     } = $props();
 
+    let oldPlayer = null
+    let newPlayer = {
+            id: 0,
+            name: '',
+            age: 0,
+            firstname: '',
+            lastname: '',
+            nationality: '',
+            photo: ''
+        }
+
+    let currPositionArray = 0    
+
     const selectablePlayers = () => {
         const currentPosition = statistics?.games?.position;
 
@@ -24,16 +37,20 @@
             case 'attacker':
             case 'forward':
                 positionArray = playerTeam.attackers;
+                currPositionArray = 0
                 break;
             case 'midfielder':
                 positionArray = playerTeam.midfielders;
+                currPositionArray = 1
                 break;
             case 'defender':
                 positionArray = playerTeam.defenders;
+                currPositionArray = 2
                 break;
             case 'goalkeeper':
             case 'keeper':
                 positionArray = playerTeam.keepers;
+                currPositionArray = 3
                 break;
             default:
                 return [];
@@ -46,13 +63,25 @@
                 label: playerData[0].name || `${playerData[0].firstname} ${playerData[0].lastname}`
             }));
     }
+
+    const onChange = (e) => {
+        e.preventDefault()
+        oldPlayer = player
+        const selectedPlayerName = e.detail.label
+        // console.log(playerTeam.selected[currPositionArray])
+        const selectedPlayer = playerTeam.selected[currPositionArray].find((player) => selectedPlayerName === player[0].name)
+        
+        player = {...selectedPlayer[0]}
+
+        
+    }
 </script>
 
 <div class="player-display">
     <div class="player-info">
         <p class="name">{player.name || `${player.firstname} ${player.lastname}`}</p>
         {#if !computer}
-            <Select items={selectablePlayers()} class="player-select" />
+            <Select items={selectablePlayers()} on:change={onChange} class="player-select" />
         {/if}
     </div>
     <div class="player-details">
