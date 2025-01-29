@@ -70,12 +70,6 @@
         // console.log('newPlayer: ', newPlayer[0], newPlayer[1]);
         // console.log('currPos: ', currPos);
     };
-//     export function reRendering(){
-//     return {
-//         get reRenderBool() { return reRender.reRenderBool },
-//         setRender(value) { reRender.reRenderBool = value}
-//     }
-// }
 </script>
 
 <div class="player-display">

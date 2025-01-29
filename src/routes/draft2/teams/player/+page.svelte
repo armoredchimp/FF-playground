@@ -10,7 +10,6 @@
 </script>
 
 <div class="page-container">
-    <h4>{reRender.reRenderBool}</h4>
     <div><TeamHeader team={playerTeam} computer={false}/></div>
     {#if playerTeam?.playerCount >= 11}
     <div class="main-cont">
