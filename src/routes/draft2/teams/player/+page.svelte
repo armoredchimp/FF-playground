@@ -3,26 +3,25 @@
     import TeamPlayerList from '$lib/TeamPlayerList.svelte';
     import TeamHeader from '$lib/TeamHeader.svelte';
     import FormationDisplay from '$lib/FormationDisplay.svelte';
-    import { playerTeam } from '$lib/stores.svelte';
+    import { playerTeam, reRender } from '$lib/stores.svelte';
+    
+    
 
-
-  
-    // const atks = $derived(
-    //     playerTeam.selected[0].map(player => player[0].name)
-    // )
 </script>
 
 <div class="page-container">
-    <!-- <h4>{atks}</h4> -->
+    <h4>{reRender.reRenderBool}</h4>
     <div><TeamHeader team={playerTeam} computer={false}/></div>
     {#if playerTeam?.playerCount >= 11}
     <div class="main-cont">
         <div class="formation">
             <FormationDisplay team={playerTeam} computer={false}/>
         </div>
+        {#key reRender.reRenderBool}
         <div class="team-list">
-            <TeamPlayerList team={playerTeam}/>
-        </div>    
+            <TeamPlayerList team={playerTeam}/>           
+        </div>
+        {/key}   
     </div>
     {:else}
         <TeamPlayerList team={playerTeam}/>

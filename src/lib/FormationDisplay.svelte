@@ -12,7 +12,7 @@
     },
         computer = true
     } = $props();
-    
+
 
     const positionCounts = {
         attackers: 2,
@@ -31,7 +31,7 @@
         team.formationDisplayed = true
     }
 </script>
-<h4>{team.formationDisplayed}</h4>
+
 <div class="formation-display">
     <!-- Attackers Row -->
     <div class="position-row attackers-row">

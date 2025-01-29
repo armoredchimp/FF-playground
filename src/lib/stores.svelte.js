@@ -282,6 +282,8 @@ export let playerTeam = $state({
     player: true
 });
 
+
+
 export let draftStageState = $state({
     complete: false,
     gate0: false,
@@ -307,6 +309,16 @@ export let playersState = $state({
     progress: { current: 0, total: 0 }
 });
 
+export let reRender = $state({
+    reRenderBool: false
+})
+
+export function reRendering(){
+    return {
+        get reRenderBool() { return reRender.reRenderBool },
+        setRender(value) { reRender.reRenderBool = value}
+    }
+}
 
 export let processedPlayers = $state([]);
 export let draftOrderList = $state([]);
@@ -315,6 +327,8 @@ export let progress = $state({
     current: 0, 
     total: 0 
 });
+
+
 
 export function getDraftStage() {
     return {

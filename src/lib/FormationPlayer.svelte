@@ -1,5 +1,5 @@
 <script>
-    import { playerTeam } from "./stores.svelte";
+    import { playerTeam, reRendering } from "./stores.svelte";
     import Select from "svelte-select";
 
     let {
@@ -16,9 +16,11 @@
         computer = false
     } = $props();
 
+   
     let positionArray = [];
     let currPositionArray = 0;
-   
+    const reRenderState = reRendering()
+  
 
     const positionMap = {
         attacker: { array: playerTeam.attackers, index: 0 },
@@ -61,11 +63,19 @@
         player = { ...newPlayer[0] };
         statistics = newPlayer[1];
         e.detail.label = ''
+        const renderCurrent = reRenderState.reRenderBool
+        reRenderState.setRender(!renderCurrent)
 
         // console.log('oldPlayer: ', player, statistics);
         // console.log('newPlayer: ', newPlayer[0], newPlayer[1]);
         // console.log('currPos: ', currPos);
     };
+//     export function reRendering(){
+//     return {
+//         get reRenderBool() { return reRender.reRenderBool },
+//         setRender(value) { reRender.reRenderBool = value}
+//     }
+// }
 </script>
 
 <div class="player-display">

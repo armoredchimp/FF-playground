@@ -16,6 +16,7 @@
         }
     } = $props();
     
+   
 </script>
 
 <div class="player-list-container">
