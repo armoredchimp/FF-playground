@@ -13,11 +13,12 @@
             photo: ''
         },
         statistics = null,
-        computer = false,
+        computer = false
     } = $props();
 
     let positionArray = [];
     let currPositionArray = 0;
+   
 
     const positionMap = {
         attacker: { array: playerTeam.attackers, index: 0 },
@@ -45,7 +46,7 @@
 
     const onChange = (e) => {
         console.log(playerTeam)
-        const selectedPlayerName = e.detail.label;
+        let selectedPlayerName = e.detail.label;
         const currPos = playerTeam.selected[currPositionArray];
 
         const newPlayer = currPos.find(([p]) => p.name === selectedPlayerName) ||
@@ -59,6 +60,7 @@
         currPos.push(newPlayer);
         player = { ...newPlayer[0] };
         statistics = newPlayer[1];
+        e.detail.label = ''
 
         // console.log('oldPlayer: ', player, statistics);
         // console.log('newPlayer: ', newPlayer[0], newPlayer[1]);

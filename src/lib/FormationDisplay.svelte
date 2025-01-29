@@ -13,6 +13,7 @@
         computer = true
     } = $props();
     
+
     const positionCounts = {
         attackers: 2,
         midfielders: 4,
@@ -35,7 +36,7 @@
     <!-- Attackers Row -->
     <div class="position-row attackers-row">
         {#each team.selected[0] as [player, statistics]}
-            <FormationPlayer {player} {statistics} {computer}/>
+            <FormationPlayer {player} {statistics} {computer} />
         {/each}
     </div>
 

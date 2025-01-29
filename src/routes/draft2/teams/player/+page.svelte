@@ -5,6 +5,8 @@
     import FormationDisplay from '$lib/FormationDisplay.svelte';
     import { playerTeam } from '$lib/stores.svelte';
 
+
+  
     // const atks = $derived(
     //     playerTeam.selected[0].map(player => player[0].name)
     // )

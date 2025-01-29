@@ -1,5 +1,5 @@
 <script>
-    import PlayerBar from "./PlayerBar.svelte";
+    import PlayerBarGroup from "./PlayerBarGroup.svelte";
     
     let {
         team = {
@@ -9,6 +9,7 @@
             midfielders: [],
             defenders: [],
             keepers: [],
+            selected: [],
             playerCount: 0,
             traits: [],
             transferBudget: 0
@@ -19,26 +20,30 @@
 
 <div class="player-list-container">
     <div class="space-y-4">
-        <PlayerBar 
+        <PlayerBarGroup 
             title="Attackers"
+            selected={team.selected[0]}
             players={team.attackers}
             position="Attacker"
         />
         
-        <PlayerBar 
+        <PlayerBarGroup 
             title="Midfielders"
+            selected={team.selected[1]}
             players={team.midfielders}
             position="Midfielder"
         />
         
-        <PlayerBar 
+        <PlayerBarGroup
             title="Defenders"
+            selected={team.selected[2]}
             players={team.defenders}
             position="Defender"
         />
 
-        <PlayerBar 
+        <PlayerBarGroup 
             title="Goalkeepers"
+            selected={team.selected[3]}
             players={team.keepers}
             position="Goalkeeper"
         />
